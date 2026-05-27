@@ -13,7 +13,7 @@ public class Stack {
     };
 
     public void push(Patient patient){
-        stack.add(top, new Patient(patient.patientId, patient.name, patient.age, patient.severity, patient.arrivalTime));
+        stack.add(top, patient);
         top++;
     };
 

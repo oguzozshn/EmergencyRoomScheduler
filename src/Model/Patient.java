@@ -13,4 +13,5 @@ public class Patient {
         this.age = age;
         this.severity = severity;
         this.arrivalTime = arrivalTime;
+    }
 }

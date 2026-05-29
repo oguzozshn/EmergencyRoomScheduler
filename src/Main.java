@@ -14,15 +14,15 @@ void main() {
     Doctor doctor8 = new Doctor(9, "Mert", "Available");
 
     HashMap hashMap = new HashMap();
-    hashMap.put(doctor);
-    hashMap.put(doctor1);
-    hashMap.put(doctor2);
-    hashMap.put(doctor3);
-    hashMap.put(doctor4);
-    hashMap.put(doctor5);
-    hashMap.put(doctor6);
-    hashMap.put(doctor7);
-    hashMap.put(doctor8);
+    hashMap.put(doctor, doctor.id);
+    hashMap.put(doctor1, doctor2.id);
+    hashMap.put(doctor2, doctor2.id);
+    hashMap.put(doctor3, doctor3.id);
+    hashMap.put(doctor4, doctor4.id);
+    hashMap.put(doctor5, doctor5.id);
+    hashMap.put(doctor6, doctor6.id);
+    hashMap.put(doctor7, doctor7.id);
+    hashMap.put(doctor8, doctor8.id);
 
     System.out.println("=== HASH MAP ZİNCİRLEME GÖRSELLEŞTİRME ===");
 

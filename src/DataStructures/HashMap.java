@@ -14,9 +14,9 @@ public class HashMap {
         this.table = new LLNode[capacity];
     }
 
-    public void put(Doctor doctor) {
-        int index = HashFunction(doctor);
-        LLNode newNode = new LLNode(doctor);
+    public void put(Object object, int id) {
+        int index = HashFunction(id);
+        LLNode newNode = new LLNode(object);
 
         if (table[index] == null) {
             table[index] = newNode;
@@ -41,7 +41,7 @@ public class HashMap {
         return null;
     }
 
-    public int HashFunction(Doctor doctor) {
-        return Math.abs(doctor.id) % capacity;
+    public int HashFunction(int id) {
+        return Math.abs(id) % capacity;
     }
 }

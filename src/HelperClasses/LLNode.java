@@ -3,11 +3,11 @@ package HelperClasses;
 import Model.Doctor;
 
 public class LLNode {
-    public Object objet;
+    public Object object;
     public LLNode next;
 
     public LLNode(Object objet) {
-        this.objet = objet;
+        this.object = objet;
         next = null;
     }
 }

@@ -3,8 +3,10 @@ package DataStructures;
 import Model.Doctor;
 import HelperClasses.LLNode;
 
+import java.io.Console;
+
 public class HashMap {
-    private LLNode[] table;
+    public LLNode[] table;
     private int capacity;
 
     public HashMap() {
@@ -30,7 +32,7 @@ public class HashMap {
             LLNode current = table[i];
 
             while (current != null) {
-                Doctor doc = (Doctor) current.objet;
+                Doctor doc = (Doctor) current.object;
                 if (doc != null && doc.status.equals("available")) {
                 }
                 current = current.next;

@@ -8,11 +8,32 @@ public class LinkedList {
     public LinkedList() {
         head = null;
     }
-    public Doctor add(Object obj) {
-        LLNode newNode = new LLNode(obj);
+    public LinkedList add(LinkedList list, Object data) {
+        LLNode newNode = new LLNode(data);
 
-        newNode.next = head;
-        head = newNode;
-        return null;
+        if (list.head == null) {
+            list.head = newNode;
+        }
+        else {
+            LLNode last = list.head;
+            while (last.next != null) {
+                last = last.next;
+            }
+            last.next = newNode;
+        }
+        return list;
+    }
+
+    public void printList(LinkedList list)
+    {
+        LLNode currNode = list.head;
+
+        System.out.print("LinkedList: ");
+
+        while (currNode != null) {
+            System.out.print(currNode.data + " ");
+
+            currNode = currNode.next;
+        }
     }
 }

@@ -1,29 +1,45 @@
 package DataStructures;
+
 import Model.Doctor;
 import HelperClasses.LLNode;
 
 public class HashMap {
-    private Doctor[] doctors;
-    private LinkedList linkedList;
-    HashMap(){
-        doctors = new Doctor[5];
-        linkedList = new LinkedList();
+    private LLNode[] table;
+    private int capacity;
+
+    public HashMap() {
+        this.capacity = 5;
+        this.table = new LLNode[capacity];
     }
 
-    public void put(Doctor doctor){
+    public void put(Doctor doctor) {
         int index = HashFunction(doctor);
-        if (doctors[index] == null){
-            doctors[index] = doctor;
-        } else{
-            doctors[index] = linkedList.add(doctor);
+        LLNode newNode = new LLNode(doctor);
+
+        if (table[index] == null) {
+            table[index] = newNode;
+        }
+        else {
+            newNode.next = table[index];
+            table[index] = newNode;
         }
     }
 
-    public void get(){}
+    public Doctor getAvailableDoctor() {
+        for (int i = 0; i < capacity; i++) {
+            LLNode current = table[i];
 
-    public void remove(){}
+            while (current != null) {
+                Doctor doc = (Doctor) current.objet;
+                if (doc != null && doc.status.equals("available")) {
+                }
+                current = current.next;
+            }
+        }
+        return null;
+    }
 
-    public int HashFunction(Doctor doctor){
-        return doctor.id % 5;
+    public int HashFunction(Doctor doctor) {
+        return Math.abs(doctor.id) % capacity;
     }
 }

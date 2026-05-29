@@ -2,11 +2,12 @@ package HelperClasses;
 import Model.Room;
 
 public class GraphNode {
-    private GraphNode parent;
+    public GraphNode edge;
     private Room room;
 
-    public GraphNode(Room room, GraphNode parent) {
+
+    public GraphNode(Room room, GraphNode edge) {
         this.room = room;
-        this.parent = null;
+        this.edge = null;
     }
 }

@@ -1,13 +1,13 @@
 package HelperClasses;
 import Model.Patient;
 
-public class Node {
+public class BSTNode {
     public Patient patient;
-    public Node left;
-    public Node right;
-    public Node parent;
+    public BSTNode left;
+    public BSTNode right;
+    public BSTNode parent;
 
-    public Node(Patient patient) {
+    public BSTNode(Patient patient) {
         this.patient = patient;
         left = right = parent = null;
     }

@@ -1,10 +1,10 @@
 package DataStructures;
 
 import Model.Patient;
-import HelperClasses.Node;
+import HelperClasses.BSTNode;
 
 public class BinarySearchTree {
-    private Node root;
+    private BSTNode root;
 
     public BinarySearchTree() {
         root = null;
@@ -14,11 +14,11 @@ public class BinarySearchTree {
         root = insertRecursive(root, patient, null);
     }
 
-    private Node insertRecursive(Node current, Patient patient, Node currentParent) {
+    private BSTNode insertRecursive(BSTNode current, Patient patient, BSTNode currentParent) {
         if (current == null) {
-            Node newNode = new Node(patient);
-            newNode.parent = currentParent;
-            return newNode;
+            BSTNode newBSTNode = new BSTNode(patient);
+            newBSTNode.parent = currentParent;
+            return newBSTNode;
         }
 
         if (patient.patientId.compareTo(current.patient.patientId) < 0) {
@@ -31,11 +31,11 @@ public class BinarySearchTree {
     }
 
     public Patient search(Patient patient) {
-        Node result = searchRecursive(root, patient);
+        BSTNode result = searchRecursive(root, patient);
         return result != null ? result.patient : null;
     };
 
-    private Node searchRecursive(Node current, Patient patient) {
+    private BSTNode searchRecursive(BSTNode current, Patient patient) {
         if (current == null) {
             return null;
         }
@@ -50,7 +50,7 @@ public class BinarySearchTree {
         return null;
     }
 
-    private Node findNode(Node current, String patientId) {
+    private BSTNode findNode(BSTNode current, String patientId) {
         if (current == null) {
             return null;
         }
@@ -69,27 +69,27 @@ public class BinarySearchTree {
         if (patient == null || root == null) return;
 
         // Yazdığımız yardımcı metotla doğrudan Node'u buluyoruz
-        Node targetNode = findNode(root, patient.patientId);
+        BSTNode targetBSTNode = findNode(root, patient.patientId);
 
-        if (targetNode == null) {
+        if (targetBSTNode == null) {
             System.out.println("Hasta bulunamadı.");
             return;
         }
 
         // Düğümü ağaçtan recursive olarak silmesi için yardımcı metodu çağırıyoruz
-        deleteNodeRecursive(targetNode);
+        deleteNodeRecursive(targetBSTNode);
     }
 
-    private void deleteNodeRecursive(Node target) {
+    private void deleteNodeRecursive(BSTNode target) {
         // Durum 3: İki çocuğu da varsa (Successor ile yer değiştirme)
         if (target.left != null && target.right != null) {
-            Node successor = findMin(target.right);
+            BSTNode successor = findMin(target.right);
             target.patient = successor.patient; // Veriyi kopyala
             deleteNodeRecursive(successor);    // Alttaki successor düğümünü silmek için tekrar çağır
         }
         // Durum 1 & 2: En fazla 1 çocuğu varsa veya yaprak düğümse
         else {
-            Node child = (target.left != null) ? target.left : target.right;
+            BSTNode child = (target.left != null) ? target.left : target.right;
 
             if (child != null) {
                 child.parent = target.parent; // Çocuğun ebeveyn bağını güncelle
@@ -105,11 +105,11 @@ public class BinarySearchTree {
         }
     }
 
-    private Node findMin(Node node) {
-        while (node.left != null) {
-            node = node.left;
+    private BSTNode findMin(BSTNode BSTNode) {
+        while (BSTNode.left != null) {
+            BSTNode = BSTNode.left;
         }
-        return node;
+        return BSTNode;
     }
 
 

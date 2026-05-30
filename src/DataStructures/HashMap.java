@@ -43,9 +43,22 @@ public class HashMap {
         }
     }
 
+    public Object get(Doctor doctor){
+        int hash = HashFunction(doctor.id);
+        if (table[hash] == null) {
+            return null;
+        }else {
+            HashMapNode temp = table[hash];
+            while (temp != null){
+                if ((int)temp.key == doctor.id){
+                    return temp.value;
+                }
+                temp = temp.next;
+            }
+            return null;
+        }
+    }
 
-
-    //Get bucket index
     public int HashFunction(int id) {
         return Math.abs(id) % capacity;
     }

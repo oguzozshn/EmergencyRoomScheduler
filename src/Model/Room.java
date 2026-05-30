@@ -1,11 +1,11 @@
 package Model;
 
 public class Room {
-    private String roomId;
+    public int id;
     private String name;
 
-    public Room(String roomId, String name) {
-        this.roomId = roomId;
+    public Room(int roomId, String name) {
+        this.id = roomId;
         this.name = name;
     }
 }

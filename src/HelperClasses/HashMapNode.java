@@ -12,4 +12,5 @@ public class HashMapNode {
         this.value = value;
         this.next = null;
     }
+
 }

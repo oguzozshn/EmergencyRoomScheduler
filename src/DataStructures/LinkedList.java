@@ -6,22 +6,52 @@ public class LinkedList {
     private LLNode head;
 
     public LinkedList() {
-        head = null;
+        this.head = null;
     }
-    public LinkedList add(LinkedList list, Object data) {
+    public void add(Object data) {
         LLNode newNode = new LLNode(data);
 
-        if (list.head == null) {
-            list.head = newNode;
-        }
-        else {
-            LLNode last = list.head;
+        if (this.head == null) {
+            this.head = newNode;
+        } else {
+            LLNode last = this.head;
             while (last.next != null) {
                 last = last.next;
             }
             last.next = newNode;
         }
-        return list;
+    }
+
+    public boolean contains(Object target) {
+        LLNode current = this.head;
+        while (current != null) {
+            if (current.data.equals(target)) {
+                return true;
+            }
+            current = current.next;
+        }
+        return false;
+    }
+
+    public void display() {
+        LLNode current = this.head;
+        while (current != null) {
+            System.out.print(current.data + " ");
+            current = current.next;
+        }
+        System.out.println();
+    }
+
+    // 🌟 Grafın toString() metodunda komşuları metin olarak birleştirebilmesi için:
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        LLNode current = this.head;
+        while (current != null) {
+            sb.append(current.data).append(" ");
+            current = current.next;
+        }
+        return sb.toString().trim();
     }
 
     public void printList(LinkedList list)

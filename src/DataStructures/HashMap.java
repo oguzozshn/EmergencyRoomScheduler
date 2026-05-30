@@ -15,9 +15,9 @@ public class HashMap {
         table = new HashMapNode[capacity];
     }
 
-    public void put(Doctor doctor, Object value){
-        int hash = HashFunction(doctor.id);
-        HashMapNode node = new HashMapNode(doctor.id, value, null);
+    public void put(int key, Object value){
+        int hash = HashFunction(key);
+        HashMapNode node = new HashMapNode(key, value, null);
 
         if (table[hash] == null) {
             table[hash] = node;
@@ -26,7 +26,7 @@ public class HashMap {
             HashMapNode current = table[hash];
 
             while (current != null){
-                if ((int)current.key == doctor.id){
+                if ((int)current.key == key){
                     if (previous == null){
                         node.next = current.next;
                         table[hash] = node;
@@ -40,19 +40,18 @@ public class HashMap {
                 previous = current;
                 current = current.next;
             }
-            node.next = table[hash];
-            table[hash] = node;
+            previous.next = node;
         }
     }
 
-    public Object get(Doctor doctor){
-        int hash = HashFunction(doctor.id);
+    public Object get(int key){
+        int hash = HashFunction(key);
         if (table[hash] == null) {
             return null;
         }else {
             HashMapNode temp = table[hash];
             while (temp != null){
-                if ((int)temp.key == doctor.id){
+                if ((int)temp.key == key){
                     return temp.value;
                 }
                 temp = temp.next;
@@ -61,8 +60,8 @@ public class HashMap {
         }
     }
 
-    public boolean remove(Doctor doctor){
-        int hash = HashFunction(doctor.id);
+    public boolean remove(int key){
+        int hash = HashFunction(key);
         if (table[hash] == null) {
             return false;
         }else {
@@ -70,7 +69,7 @@ public class HashMap {
             HashMapNode current = table[hash];
 
             while (current != null){
-                if ((int)current.key == doctor.id){
+                if ((int)current.key == key){
                     if (previous == null){
                         table[hash] = current.next;
                         return true;
@@ -100,5 +99,9 @@ public class HashMap {
 
     public int HashFunction(int id) {
         return Math.abs(id) % capacity;
+    }
+
+    public HashMapNode[] getTable() {
+        return this.table;
     }
 }

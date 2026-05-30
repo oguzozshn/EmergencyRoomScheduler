@@ -1,27 +1,36 @@
-import HelperClasses.LLNode;
+import DataStructures.HashMap;
 import Model.Doctor;
-import DataStructures.*;
 
-void main() {
-    Doctor doctor1 = new Doctor(1, "Oguz1", "Available");
-    Doctor doctor2 = new Doctor(2, "Oguz2", "Available");
-    Doctor doctor3 = new Doctor(3, "Oguz3", "Available");
-    Doctor doctor4 = new Doctor(4, "Oguz4", "Available");
-    Doctor doctor5 = new Doctor(5, "Oguz5", "Available");
-    Doctor doctor6 = new Doctor(6, "Oguz6", "Available");
-    Doctor doctor7 = new Doctor(7, "Oguz7", "Available");
-    Doctor doctor8 = new Doctor(8, "Oguz8", "Available");
+public class Main {
+    public static void main(String[] args) {
+        HashMap doctorMap = new HashMap();
 
-    LinkedList list = new LinkedList();
-    list = list.add(list, doctor1);
-    list = list.add(list, doctor2);
-    list = list.add(list, doctor3);
-    list = list.add(list, doctor4);
-    list = list.add(list, doctor5);
-    list = list.add(list, doctor6);
-    list = list.add(list, doctor7);
-    list = list.add(list, doctor8);
+        // 1. Doktor Nesnelerini Oluşturma (Bilinçli olarak çakışma yaratıyoruz)
+        Doctor d1 = new Doctor(1, "Dr. Oguz", "Available");   // 1 % 5 = Index 1
+        Doctor d2 = new Doctor(6, "Dr. Dilara", "Available"); // 6 % 5 = Index 1 (ÇAKIŞMA!)
+        Doctor d3 = new Doctor(3, "Dr. Dilem", "Busy");       // 3 % 5 = Index 3
 
-    list.printList(list);
+        System.out.println("=== TEST 1: ELEMAN EKLEME VE ÇAKIŞMA KONTROLÜ ===");
+        doctorMap.put(d1, d1.name);
+        doctorMap.put(d2, d2.name);
+        doctorMap.put(d3, d3.name);
+        doctorMap.display();
+        // Beklenen: Index 1'de hem Oguz hem Dilara birbirine bağlı olmalı.
 
+        System.out.println("\n=== TEST 2: GET (ARAMA) KONTROLÜ ===");
+        String foundDoctorName = (String) doctorMap.get(d2); // Dr. Dilara'yı aratıyoruz
+        System.out.println("ID'si 6 olan doktor arandı. Bulunan: " + foundDoctorName);
+
+        System.out.println("\n=== TEST 3: PUT (GÜNCELLEME) KONTROLÜ ===");
+        System.out.println("Dr. Oguz'un ismini 'Dr. Oguz Han' olarak güncelliyoruz...");
+        doctorMap.put(d1, "Dr. Oguz Han"); // Aynı ID ile tekrar put ettik
+        doctorMap.display();
+
+        System.out.println("\n=== TEST 4: REMOVE (SİLME) KONTROLÜ ===");
+        System.out.println("Dr. Dilara sistemden siliniyor...");
+        boolean isDeleted = doctorMap.remove(d2);
+        System.out.println("Silme işlemi başarılı mı?: " + isDeleted);
+        doctorMap.display();
+        // Beklenen: Index 1'de sadece Oguz Han kalmalı, Dilara uçmalı.
+    }
 }

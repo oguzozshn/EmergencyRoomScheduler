@@ -17,7 +17,7 @@ public class HashMap {
 
     public void put(Doctor doctor, Object value){
         int hash = HashFunction(doctor.id);
-        HashMapNode node = new HashMapNode(doctor, value, null);
+        HashMapNode node = new HashMapNode(doctor.id, value, null);
 
         if (table[hash] == null) {
             table[hash] = node;
@@ -40,6 +40,8 @@ public class HashMap {
                 previous = current;
                 current = current.next;
             }
+            node.next = table[hash];
+            table[hash] = node;
         }
     }
 
@@ -81,6 +83,18 @@ public class HashMap {
                 current = current.next;
             }
             return false;
+        }
+    }
+
+    public void display(){
+        for (int i = 0; i < table.length; i++) {
+            if (table[i] != null) {
+                HashMapNode node = table[i];
+                while (node != null) {
+                    System.out.println(node.key + " : " + node.value);
+                    node = node.next;
+                }
+            }
         }
     }
 

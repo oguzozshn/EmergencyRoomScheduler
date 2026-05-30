@@ -1,46 +1,51 @@
 package DataStructures;
 
+import HelperClasses.HashMapNode;
 import Model.Doctor;
 import HelperClasses.LLNode;
 
 import java.io.Console;
 
 public class HashMap {
-    public LLNode[] table;
-    private int capacity;
+    private HashMapNode[] table; //entry
+    private int capacity = 5;
+
 
     public HashMap() {
-        this.capacity = 5;
-        this.table = new LLNode[capacity];
+        table = new HashMapNode[capacity];
     }
 
-    public void put(Object object, int id) {
-        int index = HashFunction(id);
-        LLNode newNode = new LLNode(object);
+    public void put(Doctor doctor, Object value){
+        int hash = HashFunction(doctor.id);
+        HashMapNode node = new HashMapNode(doctor, value, null);
 
-        if (table[index] == null) {
-            table[index] = newNode;
-        }
-        else {
-            newNode.next = table[index];
-            table[index] = newNode;
-        }
-    }
+        if (table[hash] == null) {
+            table[hash] = node;
+        }else {
+            HashMapNode previous = null;
+            HashMapNode current = table[hash];
 
-    public Doctor getAvailableDoctor() {
-        for (int i = 0; i < capacity; i++) {
-            LLNode current = table[i];
-
-            while (current != null) {
-                Doctor doc = (Doctor) current.object;
-                if (doc != null && doc.status.equals("available")) {
+            while (current != null){
+                if ((int)current.key == doctor.id){
+                    if (previous == null){
+                        node.next = current.next;
+                        table[hash] = node;
+                        return;
+                    }else {
+                        node.next = current.next;
+                        previous.next = node;
+                        return;
+                    }
                 }
+                previous = current;
                 current = current.next;
             }
         }
-        return null;
     }
 
+
+
+    //Get bucket index
     public int HashFunction(int id) {
         return Math.abs(id) % capacity;
     }

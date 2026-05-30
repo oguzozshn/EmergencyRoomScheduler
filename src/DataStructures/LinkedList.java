@@ -1,6 +1,7 @@
 package DataStructures;
+
+// 🚨 EN ÖNEMLİ EKSİK: LLNode'u buraya tanıtıyoruz
 import HelperClasses.LLNode;
-import Model.Doctor;
 
 public class LinkedList {
     private LLNode head;
@@ -8,9 +9,14 @@ public class LinkedList {
     public LinkedList() {
         this.head = null;
     }
+
+    // 🌟 Graph sınıfının BFS/DFS yaparken listeyi tarayabilmesi için bu şart:
+    public LLNode getHead() {
+        return this.head;
+    }
+
     public void add(Object data) {
         LLNode newNode = new LLNode(data);
-
         if (this.head == null) {
             this.head = newNode;
         } else {
@@ -33,6 +39,16 @@ public class LinkedList {
         return false;
     }
 
+    public int size() {
+        int count = 0;
+        LLNode current = this.head;
+        while (current != null) {
+            count++;
+            current = current.next;
+        }
+        return count;
+    }
+
     public void display() {
         LLNode current = this.head;
         while (current != null) {
@@ -42,7 +58,6 @@ public class LinkedList {
         System.out.println();
     }
 
-    // 🌟 Grafın toString() metodunda komşuları metin olarak birleştirebilmesi için:
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -52,18 +67,5 @@ public class LinkedList {
             current = current.next;
         }
         return sb.toString().trim();
-    }
-
-    public void printList(LinkedList list)
-    {
-        LLNode currNode = list.head;
-
-        System.out.print("LinkedList: ");
-
-        while (currNode != null) {
-            System.out.print(currNode.data + " ");
-
-            currNode = currNode.next;
-        }
     }
 }

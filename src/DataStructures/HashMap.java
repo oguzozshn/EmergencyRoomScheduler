@@ -59,6 +59,31 @@ public class HashMap {
         }
     }
 
+    public boolean remove(Doctor doctor){
+        int hash = HashFunction(doctor.id);
+        if (table[hash] == null) {
+            return false;
+        }else {
+            HashMapNode previous = null;
+            HashMapNode current = table[hash];
+
+            while (current != null){
+                if ((int)current.key == doctor.id){
+                    if (previous == null){
+                        table[hash] = current.next;
+                        return true;
+                    } else {
+                        previous.next = current.next;
+                        return true;
+                    }
+                }
+                previous = current;
+                current = current.next;
+            }
+            return false;
+        }
+    }
+
     public int HashFunction(int id) {
         return Math.abs(id) % capacity;
     }

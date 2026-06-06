@@ -8,7 +8,7 @@ public class Graph {
 
     public Graph(){}
 
-    public void addVertex(int roomId) {
+    public void addVertex(String roomId) {
         if (map.get(roomId) == null) {
             map.put(roomId, new LinkedList());
         }

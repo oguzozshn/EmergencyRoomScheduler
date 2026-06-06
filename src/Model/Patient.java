@@ -1,17 +1,28 @@
 package Model;
 
 public class Patient {
-    public String patientId;
+    public String patientId;       // P001, P002 gibi String değerler için
     public String name;
-    public int age;
+    public int age;         // Dosyadan gelen yaş bilgisi
     public int severity;
     public int arrivalTime;
+    public int assignedRoom = -1;
+    public int assignedDocId = -1;
+    public int priorityScore = -1;
 
-    public Patient(String patientId, String name, int age, int severity, int arrivalTime) {
-        this.patientId = patientId;
+    public Patient(String id, String name, int age, int severity, int arrivalTime) {
+        this.patientId = id;
         this.name = name;
         this.age = age;
         this.severity = severity;
         this.arrivalTime = arrivalTime;
+        this.priorityScore = calculatePriority(arrivalTime);
+
+    }
+
+    public int calculatePriority(int currentTime) {
+        int waitTime = currentTime - this.arrivalTime;
+        // Formül: (6 - severity) * 100 + waitTime
+        return (6 - this.severity) * 100 + waitTime;
     }
 }

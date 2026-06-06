@@ -112,6 +112,26 @@ public class BinarySearchTree {
         return BSTNode;
     }
 
+    public void inOrder() {
+        inOrderRecursive(root);
+        System.out.println();
+    }
 
-    public void inOrder() {}
+    private void inOrderRecursive(BSTNode current) {
+        if (current == null) {
+            return;
+        }
+        
+        inOrderRecursive(current.left);
+        System.out.println("[" + current.patient.patientId + "] " + 
+                         current.patient.name + " (Age: " + current.patient.age + 
+                         ", Severity: " + current.patient.severity + ")");
+        inOrderRecursive(current.right);
+    }
+
+    // Helper method: Search by patientId (String)
+    public Patient searchById(String patientId) {
+        BSTNode node = findNode(root, patientId);
+        return node != null ? node.patient : null;
+    }
 }

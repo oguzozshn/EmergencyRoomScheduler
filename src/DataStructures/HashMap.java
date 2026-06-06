@@ -15,7 +15,7 @@ public class HashMap {
         table = new HashMapNode[capacity];
     }
 
-    public void put(int key, Object value){
+    public void put(String key, Object value){
         int hash = HashFunction(key);
         HashMapNode node = new HashMapNode(key, value, null);
 
@@ -44,7 +44,7 @@ public class HashMap {
         }
     }
 
-    public Object get(int key){
+    public Object get(String key){
         int hash = HashFunction(key);
         if (table[hash] == null) {
             return null;
@@ -97,8 +97,9 @@ public class HashMap {
         }
     }
 
-    public int HashFunction(int id) {
-        return Math.abs(id) % capacity;
+    public String HashFunction(String id) {
+        int intId = Integer.parseInt(id);
+        return String.valueOf(Math.abs(intId) % capacity);
     }
 
     public HashMapNode[] getTable() {

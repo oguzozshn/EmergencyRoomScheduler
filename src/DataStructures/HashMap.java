@@ -5,6 +5,7 @@ import Model.Doctor;
 import HelperClasses.LLNode;
 
 import java.io.Console;
+import java.util.Objects;
 
 public class HashMap {
     private HashMapNode[] table; //entry
@@ -16,20 +17,21 @@ public class HashMap {
     }
 
     public void put(String key, Object value){
-        int hash = HashFunction(key);
+        String hash = HashFunction(key);
         HashMapNode node = new HashMapNode(key, value, null);
+        int hashInt = Integer.parseInt(hash);
 
-        if (table[hash] == null) {
-            table[hash] = node;
+        if (table[hashInt] == null) {
+            table[hashInt] = node;
         }else {
             HashMapNode previous = null;
-            HashMapNode current = table[hash];
+            HashMapNode current = table[hashInt];
 
             while (current != null){
-                if ((int)current.key == key){
+                if (Objects.equals(current.key, key)){
                     if (previous == null){
                         node.next = current.next;
-                        table[hash] = node;
+                        table[hashInt] = node;
                         return;
                     }else {
                         node.next = current.next;
@@ -45,13 +47,14 @@ public class HashMap {
     }
 
     public Object get(String key){
-        int hash = HashFunction(key);
-        if (table[hash] == null) {
+        String hash = HashFunction(key);
+        int hashInt = Integer.parseInt(hash);
+        if (table[hashInt] == null) {
             return null;
         }else {
-            HashMapNode temp = table[hash];
+            HashMapNode temp = table[hashInt];
             while (temp != null){
-                if ((int)temp.key == key){
+                if (Objects.equals((String) temp.key, key)){
                     return temp.value;
                 }
                 temp = temp.next;
@@ -60,18 +63,19 @@ public class HashMap {
         }
     }
 
-    public boolean remove(int key){
-        int hash = HashFunction(key);
-        if (table[hash] == null) {
+    public boolean remove(String key){
+        String hash = HashFunction(key);
+        int hashInt = Integer.parseInt(hash);
+        if (table[hashInt] == null) {
             return false;
         }else {
             HashMapNode previous = null;
-            HashMapNode current = table[hash];
+            HashMapNode current = table[hashInt];
 
             while (current != null){
-                if ((int)current.key == key){
+                if (Objects.equals((String) current.key, key)){
                     if (previous == null){
-                        table[hash] = current.next;
+                        table[hashInt] = current.next;
                         return true;
                     } else {
                         previous.next = current.next;

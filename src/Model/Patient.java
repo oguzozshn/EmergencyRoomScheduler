@@ -1,4 +1,5 @@
 package Model;
+import DataStructures.Stack;
 
 public class Patient {
     public String patientId;       // P001, P002 gibi String değerler için
@@ -9,6 +10,7 @@ public class Patient {
     public int assignedRoom = -1;
     public int assignedDocId = -1;
     public int priorityScore = -1;
+    public Stack actionStack = new Stack(10);
 
     public Patient(String id, String name, int age, int severity, int arrivalTime) {
         this.patientId = id;
@@ -22,7 +24,6 @@ public class Patient {
 
     public int calculatePriority(int currentTime) {
         int waitTime = currentTime - this.arrivalTime;
-        // Formül: (6 - severity) * 100 + waitTime
         return (6 - this.severity) * 100 + waitTime;
     }
 }

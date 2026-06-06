@@ -173,8 +173,29 @@ public class HashMap {
     }
 
     public String HashFunction(String id) {
-        int intId = Integer.parseInt(id);
-        return String.valueOf(Math.abs(intId) % capacity);
+        // String'in her karakterini kontrol et
+        int hash = 0;
+
+        // Karakterlerin pozisyonuna göre ağırlıklı değer ekle
+        for (int i = 0; i < id.length(); i++) {
+            char c = id.charAt(i);  // i'inci karakteri al
+            int charValue = c - 'A'; // 'A' = 0, 'B' = 1, vb. (0-25 arası)
+
+            // Eğer digit ise (0-9)
+            if (c >= '0' && c <= '9') {
+                charValue = c - '0'; // '0' = 0, '1' = 1, vb. (0-9 arası)
+            }
+
+            hash = hash + (charValue * (i + 1)); // Her karaktere pozisyonu ağırlık olarak ekle
+        }
+
+        // Negative değerleri pozitif yap
+        if (hash < 0) {
+            hash = hash * -1;
+        }
+
+        // Capacity'e göre mod al
+        return Integer.toString(hash % capacity);
     }
 
     public int HashFunction(int id) {

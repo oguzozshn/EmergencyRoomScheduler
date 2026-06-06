@@ -134,4 +134,9 @@ public class BinarySearchTree {
         BSTNode node = findNode(root, patientId);
         return node != null ? node.patient : null;
     }
+
+    // Root düğümünü geri döndür
+    public BSTNode getRoot() {
+        return root;
+    }
 }

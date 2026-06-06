@@ -3,37 +3,37 @@ package DataStructures;
 import Model.Patient;
 
 public class Stack {
-    private Patient[] stack;
+    private Object[] stack;
     private int top;
     private int capacity;
 
     public Stack(int capacity) {
         this.capacity = capacity;
-        this.stack = new Patient[capacity];
+        this.stack = new Object[capacity];
         this.top = -1;
     }
 
-    public void push(Patient patient) {
+    public void push(Object object) {
         if (isFull()) {
             return;
         }
         top++;
-        stack[top] = patient;
+        stack[top] = object;
     }
 
-    public Patient pop() {
+    public Object pop() {
         if (isEmpty()) {
             return null;
         }
 
-        Patient tempPatient = stack[top];
+        Object tempPatient = stack[top];
         stack[top] = null;
         top--;
 
         return tempPatient;
     }
 
-    public Patient peek() {
+    public Object peek() {
         if (isEmpty()) {
             return null;
         }

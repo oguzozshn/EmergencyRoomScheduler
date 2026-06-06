@@ -13,7 +13,7 @@ public class Graph {
             map.put(roomId, new LinkedList());
         }
     }
-    public void addEdge(int source, int destination, boolean bidirectional) {
+    public void addEdge(String source, String destination, boolean bidirectional) {
         if (map.get(source) == null) addVertex(source);
         if (map.get(destination) == null) addVertex(destination);
 
@@ -99,6 +99,69 @@ public class Graph {
     }
 
     // =========================================================
+    // 🌟 STRING ID İLE BFS - ODALAR ARASI NAVIGASYON
+    // =========================================================
+    public void BFSPath(String startRoomId, String endRoomId) {
+        if (map.get(startRoomId) == null || map.get(endRoomId) == null) {
+            System.out.println("[HATA]: Başlangıç veya hedef oda bulunamadı!");
+            return;
+        }
+
+        LinkedList visited = new LinkedList();
+        LinkedList path = new LinkedList(); // En kısa yolu tutacak liste
+        MiniQueueString queue = new MiniQueueString();
+
+        queue.enqueue(startRoomId);
+        visited.add(startRoomId);
+        path.add(startRoomId);
+
+        boolean found = false;
+
+        while (!queue.isEmpty() && !found) {
+            String current = queue.dequeue();
+
+            if (current.equals(endRoomId)) {
+                found = true;
+                break;
+            }
+
+            LinkedList neighbors = (LinkedList) map.get(current);
+            if (neighbors != null) {
+                LLNode neighborNode = neighbors.getHead();
+                while (neighborNode != null) {
+                    String neighborId = (String) neighborNode.data;
+
+                    if (!visited.contains(neighborId)) {
+                        visited.add(neighborId);
+                        queue.enqueue(neighborId);
+                        
+                        // Eğer bu hedef odaysa işaretleyelim
+                        if (neighborId.equals(endRoomId)) {
+                            found = true;
+                            path.add(neighborId);
+                            break;
+                        }
+                    }
+                    neighborNode = neighborNode.next;
+                }
+                
+                if (found) {
+                    path.add(current);
+                }
+            }
+        }
+
+        // Yolu yazdır
+        if (found) {
+            System.out.println("\n=== BFS EN KISA YOLU ===");
+            System.out.println("[" + startRoomId + "] -> [" + endRoomId + "]");
+            System.out.println("Rota: " + startRoomId + " -> " + endRoomId);
+        } else {
+            System.out.println("[UYARI]: Hedef odaya ulaşılamadı!");
+        }
+    }
+
+    // =========================================================
     // 🚨 BFS İÇİN GEREKLİ GİZLİ MİNİ KUYRUK (QUEUE) SINIFI
     // =========================================================
     private class MiniQueue {
@@ -117,6 +180,35 @@ public class Graph {
         public int dequeue() {
             if (front == null) return -1;
             int data = (int) front.data;
+            front = front.next;
+            if (front == null) rear = null;
+            return data;
+        }
+
+        public boolean isEmpty() {
+            return front == null;
+        }
+    }
+
+    // =========================================================
+    // 🚨 STRING İÇİN MINI KUYRUK SINIFI
+    // =========================================================
+    private class MiniQueueString {
+        private LLNode front, rear;
+
+        public void enqueue(String data) {
+            LLNode newNode = new LLNode(data);
+            if (rear == null) {
+                front = rear = newNode;
+                return;
+            }
+            rear.next = newNode;
+            rear = newNode;
+        }
+
+        public String dequeue() {
+            if (front == null) return null;
+            String data = (String) front.data;
             front = front.next;
             if (front == null) rear = null;
             return data;

@@ -68,4 +68,10 @@ public class LinkedList {
         }
         return sb.toString().trim();
     }
+
+    public void addFirst(Object data) {
+        LLNode newNode = new LLNode(data);
+        newNode.next = this.head;
+        this.head = newNode;
+    }
 }

@@ -192,12 +192,12 @@ public class Main {
         erGraph.addVertex(WaitingRoom.id);
         erGraph.addVertex(Discharge.id);
 
-        erGraph.addEdge(Reception.id,     TreatmentRoomA.id, false);
-        erGraph.addEdge(Reception.id,     WaitingRoom.id,    false);
-        erGraph.addEdge(TreatmentRoomA.id, TreatmentRoomB.id, false);
-        erGraph.addEdge(TreatmentRoomA.id, ICU.id,           false);
-        erGraph.addEdge(WaitingRoom.id,   TreatmentRoomB.id, false);
-        erGraph.addEdge(TreatmentRoomB.id, Discharge.id,     false);
+        erGraph.addEdge(Reception.id,     TreatmentRoomA.id, true);
+        erGraph.addEdge(Reception.id,     WaitingRoom.id,    true);
+        erGraph.addEdge(TreatmentRoomA.id, TreatmentRoomB.id, true);
+        erGraph.addEdge(TreatmentRoomA.id, ICU.id,           true);
+        erGraph.addEdge(WaitingRoom.id,   TreatmentRoomB.id, true);
+        erGraph.addEdge(TreatmentRoomB.id, Discharge.id,     true);
 
         return erGraph;
     }
@@ -263,17 +263,29 @@ public class Main {
             System.out.println("Müsait Doktor Bulundu: [" + availableDoctor.id + "] " + availableDoctor.name);
 
             patient.assignedDocId = availableDoctor.id;
-            patient.assignedRoom  = 1;
             availableDoctor.treatedCount++;
 
             if (availableDoctor.treatedCount >= 2) {
-                availableDoctor.status = "BUSY"; // 2 hasta tedavi etti, gün sonu busy
+                availableDoctor.status = "BUSY";
+            }
+
+            // Severity'e göre oda belirle
+            String targetRoom;
+            if (patient.severity == 1) {
+                targetRoom = ICU.id;
+                patient.assignedRoom = 3;
+            } else if (patient.severity <= 3) {
+                targetRoom = TreatmentRoomA.id;
+                patient.assignedRoom = 1;
+            } else {
+                targetRoom = TreatmentRoomB.id;
+                patient.assignedRoom = 2;
             }
 
             actionStack.push("ASSIGN:" + patient.patientId + ":" + availableDoctor.id);
 
-            System.out.println("[✓] " + patient.name + " -> " + availableDoctor.name + " (Oda: R1)");
-            erGraph.BFSPath(Reception.id, "R1");
+            System.out.println("[✓] " + patient.name + " -> " + availableDoctor.name + " (Oda: " + targetRoom + ")");
+            erGraph.BFSPath(Reception.id, targetRoom);
         } else {
             System.out.println("\n[UYARI]: Müsait doktor bulunamadı!");
         }
@@ -287,7 +299,7 @@ public class Main {
             System.out.println("[→] Kuyruktan çıkarılan hasta: " + dischargedPatient.name);
 
             if (dischargedPatient.assignedRoom != -1) {
-                String treatmentRoom = "R1";
+                String treatmentRoom = "R" + dischargedPatient.assignedRoom;
                 System.out.println("\n[📍] Taburcu yolu: " + treatmentRoom + " → R5");
                 erGraph.BFSPath(treatmentRoom, "R5");
             }

@@ -108,16 +108,16 @@ public class Graph {
         }
 
         LinkedList visited = new LinkedList();
-        LinkedList path = new LinkedList(); // En kısa yolu tutacak liste
         MiniQueueString queue = new MiniQueueString();
+        HashMap parentMap = new HashMap(); // her node'un parent'ını tutar
 
         queue.enqueue(startRoomId);
         visited.add(startRoomId);
-        path.add(startRoomId);
+        parentMap.put(startRoomId, "NULL");
 
         boolean found = false;
 
-        while (!queue.isEmpty() && !found) {
+        while (!queue.isEmpty()) {
             String current = queue.dequeue();
 
             if (current.equals(endRoomId)) {
@@ -130,32 +130,35 @@ public class Graph {
                 LLNode neighborNode = neighbors.getHead();
                 while (neighborNode != null) {
                     String neighborId = (String) neighborNode.data;
-
                     if (!visited.contains(neighborId)) {
                         visited.add(neighborId);
                         queue.enqueue(neighborId);
-                        
-                        // Eğer bu hedef odaysa işaretleyelim
-                        if (neighborId.equals(endRoomId)) {
-                            found = true;
-                            path.add(neighborId);
-                            break;
-                        }
+                        parentMap.put(neighborId, current); // parent'ı kaydet
                     }
                     neighborNode = neighborNode.next;
-                }
-                
-                if (found) {
-                    path.add(current);
                 }
             }
         }
 
-        // Yolu yazdır
         if (found) {
+            // Yolu geriye doğru takip et
+            LinkedList path = new LinkedList();
+            String step = endRoomId;
+            while (!step.equals("NULL")) {
+                path.addFirst(step);
+                step = (String) parentMap.get(step);
+            }
+
+            // Yazdır
             System.out.println("\n=== BFS EN KISA YOLU ===");
-            System.out.println("[" + startRoomId + "] -> [" + endRoomId + "]");
-            System.out.println("Rota: " + startRoomId + " -> " + endRoomId);
+            System.out.print("Rota: ");
+            LLNode node = path.getHead();
+            while (node != null) {
+                System.out.print("[" + node.data + "]");
+                if (node.next != null) System.out.print(" -> ");
+                node = node.next;
+            }
+            System.out.println();
         } else {
             System.out.println("[UYARI]: Hedef odaya ulaşılamadı!");
         }

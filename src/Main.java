@@ -253,7 +253,7 @@ public class Main {
             availableDoctor.status = "BUSY";
             actionStack.push("ASSIGN:" + patient.patientId + ":" + availableDoctor.id); // ← ekle
 
-            System.out.println("[✓] " + patient.name + " -> Dr. " + availableDoctor.name + " (Oda: R1)");
+            System.out.println("[✓] " + patient.name + " -> " + availableDoctor.name + " (Oda: R1)");
             erGraph.BFSPath(Reception.id, "R1");
         } else {
             System.out.println("\n[UYARI]: Müsait doktor bulunamadı!");
@@ -333,7 +333,7 @@ public class Main {
             Doctor doctor = (Doctor) doctorMap.get(doctorId);
             if (doctor != null) {
                 doctor.status = "AVAILABLE";
-                System.out.println("[✓] Geri alındı: Dr. " + doctor.name + " tekrar müsait.");
+                System.out.println("[✓] Geri alındı: " + doctor.name + " tekrar müsait.");
             }
         } else if (parts[0].equals("INTAKE")) {
             System.out.println("[✓] Geri alındı: " + parts[1] + " intake işlemi iptal edildi.");

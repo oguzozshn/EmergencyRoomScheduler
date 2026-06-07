@@ -13,11 +13,15 @@ public class Main {
     static Room WaitingRoom = new Room("R4", "Waiting Room");
     static Room Discharge = new Room("R5", "Discharge");
     static int currentTime = 10;
+    static Doctor d1 = new Doctor(101, "Dr. Alice Carter",  "AVAILABLE");
+    static Doctor d2 = new Doctor(202, "Dr. Ben Nguyen",    "AVAILABLE");
+    static Doctor d3 = new Doctor(303, "Dr. Clara Hassan",  "AVAILABLE");
+    static Doctor d4 = new Doctor(404, "Dr. David Reyes",   "AVAILABLE");
 
     public static void main(String[] args) {
         Graph erGraph = initializeGraph();
+        HashMap doctorMap = initializeDoctors();
 
-        HashMap doctorMap = new HashMap();
         Stack stack = new Stack(10);
 
 
@@ -343,5 +347,16 @@ public class Main {
         erGraph.addEdge(TreatmentRoomB.id, Discharge.id,     false);
 
         return erGraph;
+    }
+
+    private static HashMap initializeDoctors() {
+        HashMap doctorMap = new HashMap();
+
+        doctorMap.put(d1.id, d1);
+        doctorMap.put(d2.id, d2);
+        doctorMap.put(d3.id, d3);
+        doctorMap.put(d4.id, d4);
+
+        return doctorMap;
     }
 }

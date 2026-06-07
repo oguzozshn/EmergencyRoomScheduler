@@ -25,7 +25,7 @@ public class Main {
         Stack actionStack = new Stack(100);
 
         Scanner scanner = new Scanner(System.in);
-        loadPatientsFromFile(patientTree, scanner, actionStack, currentTime);
+        int totalAdmitted = loadPatientsFromFile(patientTree, scanner, actionStack, currentTime);
 
         Patient highestPriorityPatient = findHighestPriorityPatient(patientTree.getRoot());
         if (highestPriorityPatient != null) {
@@ -47,7 +47,7 @@ public class Main {
         searchAndPrintPatient(patientTree, scanner);
 
 
-        printSystemSummary(patientTree, doctorMap);
+        printSystemSummary(patientTree, doctorMap, totalAdmitted, 1);
         scanner.close();
     }
 
@@ -198,7 +198,8 @@ public class Main {
 
         return doctorMap;
     }
-    private static void loadPatientsFromFile(BinarySearchTree patientTree, Scanner scanner, Stack actionStack, int currentTime) {
+    private static int loadPatientsFromFile(BinarySearchTree patientTree, Scanner scanner, Stack actionStack, int currentTime) {
+        int count = 0;
         System.out.println("=== ACİL SERVİS SİSTEMİ VERİ YÜKLEME ===");
         System.out.print("Lütfen hasta listesi dosyasının (patient.txt) tam yolunu giriniz: ");
 
@@ -220,6 +221,7 @@ public class Main {
                     Patient newPatient = new Patient(patientId, name, age, severity, arrivalTime, currentTime);
                     actionStack.push("INTAKE:" + patientId);
                     patientTree.insert(newPatient);
+                    count++;
 
                     System.out.println("[KABUL BAŞARILI] " + patientId + " kodlu " + name + " ağaca eklendi.");
                 }
@@ -235,6 +237,8 @@ public class Main {
         } catch (NumberFormatException e) {
             System.out.println("\n[HATA]: Sayısal alanlarda hatalı format var!");
         }
+
+        return count;
     }
 
     private static void assignDoctorAndRoom(Patient patient, HashMap doctorMap, Graph erGraph, Stack actionStack) {
@@ -277,18 +281,15 @@ public class Main {
             System.out.println("\n[UYARI]: Taburcu edilecek hasta yok!");
         }
     }
-    private static void printSystemSummary(BinarySearchTree patientTree, HashMap doctorMap) {
+    private static void printSystemSummary(BinarySearchTree patientTree, HashMap doctorMap, int totalAdmitted, int totalDischarged) {
         System.out.println("\n╔═══════════════════════════════════════════════════════╗");
         System.out.println("║          ACİL SERVİS SİSTEMİ - SISTEM ÖZETİ           ║");
         System.out.println("╚═══════════════════════════════════════════════════════╝");
 
-        int totalAdmitted         = countTotalPatients(patientTree.getRoot());
-        int totalDischargedEstimate = 1;
-        int stillInSystem         = totalAdmitted - totalDischargedEstimate;
-
+        int stillInSystem = totalAdmitted - totalDischarged;
         System.out.println("\n📊 HASTA SAYILARI:");
         System.out.println("   ├─ Toplam Kabul Edilen  : " + totalAdmitted);
-        System.out.println("   ├─ Taburcu Edilen       : " + totalDischargedEstimate);
+        System.out.println("   ├─ Taburcu Edilen       : " + totalDischarged );
         System.out.println("   └─ Halen Sistemde       : " + stillInSystem);
 
         System.out.println("\n👥 HELENKİ HASTALAR (BST InOrder):");

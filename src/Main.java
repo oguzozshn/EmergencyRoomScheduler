@@ -22,9 +22,10 @@ public class Main {
         Graph erGraph = initializeGraph();
         HashMap doctorMap = initializeDoctors();
         BinarySearchTree patientTree = new BinarySearchTree();
+        Stack actionStack = new Stack(100);
 
         Scanner scanner = new Scanner(System.in);
-        loadPatientsFromFile(patientTree, scanner);
+        loadPatientsFromFile(patientTree, scanner, actionStack);
 
         Patient highestPriorityPatient = findHighestPriorityPatient(patientTree.getRoot());
         if (highestPriorityPatient != null) {
@@ -34,13 +35,16 @@ public class Main {
                     " - Priority Score: " + highestPriorityPatient.priorityScore +
                     " (Severity: " + highestPriorityPatient.severity + ")");
 
-            assignDoctorAndRoom(highestPriorityPatient, doctorMap, erGraph);
+            assignDoctorAndRoom(highestPriorityPatient, doctorMap, erGraph, actionStack);
+            undoLastAction(actionStack, doctorMap);
         } else {
             System.out.println("\n[WARNING]: No patients found!");
         }
         Queue dischargeQueue = new Queue(10);
+        dischargeQueue.enqueue(highestPriorityPatient);
 
         dischargePatient(dischargeQueue, patientTree, erGraph);
+
 
         printSystemSummary(patientTree, doctorMap);
         scanner.close();
@@ -191,7 +195,7 @@ public class Main {
 
         return doctorMap;
     }
-    private static void loadPatientsFromFile(BinarySearchTree patientTree, Scanner scanner) {
+    private static void loadPatientsFromFile(BinarySearchTree patientTree, Scanner scanner, Stack actionStack) {
         System.out.println("=== ACİL SERVİS SİSTEMİ VERİ YÜKLEME ===");
         System.out.print("Lütfen hasta listesi dosyasının (patient.txt) tam yolunu giriniz: ");
 
@@ -211,7 +215,7 @@ public class Main {
                     int arrivalTime   = Integer.parseInt(tokens[4].trim());
 
                     Patient newPatient = new Patient(patientId, name, age, severity, arrivalTime);
-                    newPatient.actionStack.push("Intake");
+                    actionStack.push("INTAKE:" + patientId);
                     patientTree.insert(newPatient);
 
                     System.out.println("[KABUL BAŞARILI] " + patientId + " kodlu " + name + " ağaca eklendi.");
@@ -230,7 +234,7 @@ public class Main {
         }
     }
 
-    private static void assignDoctorAndRoom(Patient patient, HashMap doctorMap, Graph erGraph) {
+    private static void assignDoctorAndRoom(Patient patient, HashMap doctorMap, Graph erGraph, Stack actionStack) {
         Doctor availableDoctor = findFirstAvailableDoctor(doctorMap);
 
         if (availableDoctor != null) {
@@ -240,6 +244,7 @@ public class Main {
             patient.assignedDocId = availableDoctor.id;
             patient.assignedRoom  = 1;
             availableDoctor.status = "BUSY";
+            actionStack.push("ASSIGN:" + patient.patientId + ":" + availableDoctor.id); // ← ekle
 
             System.out.println("[✓] " + patient.name + " -> Dr. " + availableDoctor.name + " (Oda: R1)");
             erGraph.BFSPath(Reception.id, "R1");
@@ -306,5 +311,28 @@ public class Main {
         }
 
         System.out.println("\n╚═══════════════════════════════════════════════════════╝\n");
+    }
+
+    private static void undoLastAction(Stack actionStack, HashMap doctorMap) {
+        if (actionStack.isEmpty()) {
+            System.out.println("\n[UYARI]: Geri alınacak işlem yok!");
+            return;
+        }
+
+        String lastAction = (String) actionStack.pop();
+        String[] parts = lastAction.split(":");
+
+        System.out.println("\n=== UNDO ===");
+
+        if (parts[0].equals("ASSIGN")) {
+            int doctorId = Integer.parseInt(parts[2]);
+            Doctor doctor = (Doctor) doctorMap.get(doctorId);
+            if (doctor != null) {
+                doctor.status = "AVAILABLE";
+                System.out.println("[✓] Geri alındı: Dr. " + doctor.name + " tekrar müsait.");
+            }
+        } else if (parts[0].equals("INTAKE")) {
+            System.out.println("[✓] Geri alındı: " + parts[1] + " intake işlemi iptal edildi.");
+        }
     }
 }

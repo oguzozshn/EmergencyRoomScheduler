@@ -10,7 +10,6 @@ public class Patient {
     public int assignedRoom = -1;
     public int assignedDocId = -1;
     public int priorityScore = -1;
-    public Stack actionStack = new Stack(10);
 
     public Patient(String id, String name, int age, int severity, int arrivalTime) {
         this.patientId = id;
@@ -19,8 +18,6 @@ public class Patient {
         this.severity = severity;
         this.arrivalTime = arrivalTime;
         this.priorityScore = calculatePriority(arrivalTime);
-        this.actionStack.push("Intake");
-
     }
 
     public int calculatePriority(int currentTime) {

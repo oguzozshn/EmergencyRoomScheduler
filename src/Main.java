@@ -27,9 +27,8 @@ public class Main {
         loadPatientsFromFile(patientTree, scanner);
 
         Patient highestPriorityPatient = findHighestPriorityPatient(patientTree.getRoot());
-
         if (highestPriorityPatient != null) {
-            System.out.println("\n=== EN YÜKSEK PRİYORİTE HASTASI ===");
+            System.out.println("\n=== Highest Priority Patient ===");
             System.out.println("[" + highestPriorityPatient.patientId + "] " +
                     highestPriorityPatient.name +
                     " - Priority Score: " + highestPriorityPatient.priorityScore +
@@ -37,56 +36,13 @@ public class Main {
 
             assignDoctorAndRoom(highestPriorityPatient, doctorMap, erGraph);
         } else {
-            System.out.println("\n[UYARI]: Ağaçta hasta yok!");
+            System.out.println("\n[WARNING]: No patients found!");
         }
 
         // === TEDAVI EDILEN HASTALARI QUEUE'YA EKLE ===
         Queue dischargeQueue = new Queue(10);
 
-        // Örnek: En yüksek priority hastasını tedavi edilmiş olarak queue'ya ekle
-        if (highestPriorityPatient != null) {
-            highestPriorityPatient.actionStack.push("Treated");
-            dischargeQueue.enqueue(highestPriorityPatient);
-            System.out.println("\n=== QUEUE İŞLEMLERİ ===");
-            System.out.println("[✓] Hasta kuyruğa eklendi: " + highestPriorityPatient.name);
-        }
-
-        // === QUEUE'DAN HASTAYI ÇIKAR, BFS YOLU GÖSTER VE BST'DEN SİL ===
-        if (!dischargeQueue.isEmpty()) {
-            System.out.println("\n=== HASTANIN TABURCU PROSESİ ===");
-
-            Patient dischargedPatient = dischargeQueue.dequeue();
-            System.out.println("[→] Kuyruktan çıkarılan hasta: " + dischargedPatient.name);
-
-            // BFS yolunu göster: Treatment Room -> Discharge (R5)
-            if (dischargedPatient.assignedRoom != -1) {
-                String treatmentRoom = "R1"; // assignedRoom 1 = R1
-                System.out.println("\n[📍] Taburcu yolu: " + treatmentRoom + " → R5");
-                erGraph.BFSPath(treatmentRoom, "R5");
-            }
-
-            // Hastayı BST'den sil
-            System.out.println("\n[🗑️] Hasta BST'den siliniyor...");
-            patientTree.delete(dischargedPatient);
-            System.out.println("[✓] " + dischargedPatient.name + " başarıyla taburcu edildi!");
-            System.out.println("[✓] Hasta veri tabanından silindi.");
-        } else {
-            System.out.println("\n[UYARI]: Taburcu edilecek hasta yok!");
-        }
-
-        // === PATIENTID'YE GÖRE HASTA KAYDI ARAMA ===
-        System.out.println("\n=== HASTA KAYDI ARAMA ===");
-        System.out.print("Lütfen aranacak hasta ID'sini giriniz (örn: P001): ");
-        String searchPatientId = scanner.nextLine();
-
-        Patient foundPatient = patientTree.searchById(searchPatientId);
-
-        if (foundPatient != null) {
-            System.out.println("\n[✓] HASTA BULUNDU!");
-            printPatientRecord(foundPatient);
-        } else {
-            System.out.println("\n[✗] Hasta bulunamadı! ID: " + searchPatientId);
-        }
+        dischargePatient(dischargeQueue, patientTree, erGraph);
 
         // === SİSTEM İSTATİSTİKLERİ VE ÖZETİ ===
         System.out.println("\n╔═══════════════════════════════════════════════════════╗");
@@ -133,7 +89,6 @@ public class Main {
         scanner.close();
     }
 
-    // === HASTA KAYDINI YAZDIRAN HELPER METODU ===
     private static void printPatientRecord(Patient patient) {
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║        HASTA KAYDı DETAYLARI           ║");
@@ -335,4 +290,28 @@ public class Main {
             System.out.println("\n[UYARI]: Müsait doktor bulunamadı!");
         }
     }
+
+    private static void dischargePatient(Queue dischargeQueue, BinarySearchTree patientTree, Graph erGraph) {
+        if (!dischargeQueue.isEmpty()) {
+            System.out.println("\n=== HASTANIN TABURCU PROSESİ ===");
+
+            Patient dischargedPatient = dischargeQueue.dequeue();
+            System.out.println("[→] Kuyruktan çıkarılan hasta: " + dischargedPatient.name);
+
+            if (dischargedPatient.assignedRoom != -1) {
+                String treatmentRoom = "R1";
+                System.out.println("\n[📍] Taburcu yolu: " + treatmentRoom + " → R5");
+                erGraph.BFSPath(treatmentRoom, "R5");
+            }
+
+            System.out.println("\n[🗑️] Hasta BST'den siliniyor...");
+            patientTree.delete(dischargedPatient);
+            System.out.println("[✓] " + dischargedPatient.name + " başarıyla taburcu edildi!");
+            System.out.println("[✓] Hasta veri tabanından silindi.");
+        } else {
+            System.out.println("\n[UYARI]: Taburcu edilecek hasta yok!");
+        }
+    }
+
+
 }

@@ -26,40 +26,16 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         loadPatientsFromFile(patientTree, scanner);
 
-        // === EN YÜKSEK PRİYORİTE HASTASINI BULMAK ===
         Patient highestPriorityPatient = findHighestPriorityPatient(patientTree.getRoot());
 
         if (highestPriorityPatient != null) {
             System.out.println("\n=== EN YÜKSEK PRİYORİTE HASTASI ===");
             System.out.println("[" + highestPriorityPatient.patientId + "] " +
-                               highestPriorityPatient.name +
-                               " - Priority Score: " + highestPriorityPatient.priorityScore +
-                               " (Severity: " + highestPriorityPatient.severity + ")");
+                    highestPriorityPatient.name +
+                    " - Priority Score: " + highestPriorityPatient.priorityScore +
+                    " (Severity: " + highestPriorityPatient.severity + ")");
 
-            // === İLK AVAILABLE DOKTORU BULMAK ===
-            Doctor availableDoctor = findFirstAvailableDoctor(doctorMap);
-
-            if (availableDoctor != null) {
-                System.out.println("\n=== DOKTOR ATAMASI ===");
-                System.out.println("Müsait Doktor Bulundu: [" + availableDoctor.id + "] " + availableDoctor.name);
-
-                // Hastaya doktor ata
-                highestPriorityPatient.assignedDocId = availableDoctor.id;
-
-                // Hastaya oda ata (Treatment Room A'ya)
-                highestPriorityPatient.assignedRoom = 1; // R1
-
-                // Doktorun durumunu güncelle
-                availableDoctor.status = "BUSY";
-
-                System.out.println("[✓] " + highestPriorityPatient.name + " -> Dr. " +
-                                   availableDoctor.name + " (Oda: R1)");
-
-                // === BFS PATH YAZDIRMA ===
-                erGraph.BFSPath(Reception.id, "R1");
-            } else {
-                System.out.println("\n[UYARI]: Müsait doktor bulunamadı!");
-            }
+            assignDoctorAndRoom(highestPriorityPatient, doctorMap, erGraph);
         } else {
             System.out.println("\n[UYARI]: Ağaçta hasta yok!");
         }
@@ -339,6 +315,24 @@ public class Main {
             System.out.println("Girilen Yol: " + filePath);
         } catch (NumberFormatException e) {
             System.out.println("\n[HATA]: Sayısal alanlarda hatalı format var!");
+        }
+    }
+
+    private static void assignDoctorAndRoom(Patient patient, HashMap doctorMap, Graph erGraph) {
+        Doctor availableDoctor = findFirstAvailableDoctor(doctorMap);
+
+        if (availableDoctor != null) {
+            System.out.println("\n=== DOKTOR ATAMASI ===");
+            System.out.println("Müsait Doktor Bulundu: [" + availableDoctor.id + "] " + availableDoctor.name);
+
+            patient.assignedDocId = availableDoctor.id;
+            patient.assignedRoom  = 1;
+            availableDoctor.status = "BUSY";
+
+            System.out.println("[✓] " + patient.name + " -> Dr. " + availableDoctor.name + " (Oda: R1)");
+            erGraph.BFSPath(Reception.id, "R1");
+        } else {
+            System.out.println("\n[UYARI]: Müsait doktor bulunamadı!");
         }
     }
 }

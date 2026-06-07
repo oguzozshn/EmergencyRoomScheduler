@@ -38,54 +38,11 @@ public class Main {
         } else {
             System.out.println("\n[WARNING]: No patients found!");
         }
-
-        // === TEDAVI EDILEN HASTALARI QUEUE'YA EKLE ===
         Queue dischargeQueue = new Queue(10);
 
         dischargePatient(dischargeQueue, patientTree, erGraph);
 
-        // === SİSTEM İSTATİSTİKLERİ VE ÖZETİ ===
-        System.out.println("\n╔═══════════════════════════════════════════════════════╗");
-        System.out.println("║          ACİL SERVİS SİSTEMİ - SISTEM ÖZETİ           ║");
-        System.out.println("╚═══════════════════════════════════════════════════════╝");
-
-        // Hastaların toplam sayılarını hesapla
-        int totalAdmitted = countTotalPatients(patientTree.getRoot());
-        int totalDischargedEstimate = 1; // Discharged hasta sayısı (1 hasta taburcu edildi)
-        int stillInSystem = totalAdmitted - totalDischargedEstimate;
-
-        System.out.println("\n📊 HASTA SAYILARI:");
-        System.out.println("   ├─ Toplam Kabul Edilen  : " + totalAdmitted);
-        System.out.println("   ├─ Taburcu Edilen       : " + totalDischargedEstimate);
-        System.out.println("   └─ Halen Sistemde       : " + stillInSystem);
-
-        // Sistemde kalan hastaları listele
-        System.out.println("\n👥 HELENKİ HASTALAR (BST InOrder):");
-        if (stillInSystem > 0) {
-            System.out.println("   ├─ Hasta Listesi:");
-            patientTree.inOrder();
-        } else {
-            System.out.println("   └─ Hasta yok!");
-        }
-
-        // Doktor durumlarını kontrol et
-        int busyDoctors = countBusyDoctors(doctorMap);
-        int totalDoctors = 4; // d1, d2, d3, d4
-        int availableDoctors = totalDoctors - busyDoctors;
-
-        System.out.println("\n👨‍⚕️ DOKTOR DURUMU:");
-        System.out.println("   ├─ Toplam Doktor        : " + totalDoctors);
-        System.out.println("   ├─ Meşgul Doktor        : " + busyDoctors);
-        System.out.println("   └─ Müsait Doktor        : " + availableDoctors);
-
-        // Meşgul doktorları listele
-        if (busyDoctors > 0) {
-            System.out.println("\n   Meşgul Doktorlar:");
-            listBusyDoctors(doctorMap);
-        }
-
-        System.out.println("\n╚═══════════════════════════════════════════════════════╝\n");
-
+        printSystemSummary(patientTree, doctorMap);
         scanner.close();
     }
 
@@ -312,6 +269,42 @@ public class Main {
             System.out.println("\n[UYARI]: Taburcu edilecek hasta yok!");
         }
     }
+    private static void printSystemSummary(BinarySearchTree patientTree, HashMap doctorMap) {
+        System.out.println("\n╔═══════════════════════════════════════════════════════╗");
+        System.out.println("║          ACİL SERVİS SİSTEMİ - SISTEM ÖZETİ           ║");
+        System.out.println("╚═══════════════════════════════════════════════════════╝");
 
+        int totalAdmitted         = countTotalPatients(patientTree.getRoot());
+        int totalDischargedEstimate = 1;
+        int stillInSystem         = totalAdmitted - totalDischargedEstimate;
 
+        System.out.println("\n📊 HASTA SAYILARI:");
+        System.out.println("   ├─ Toplam Kabul Edilen  : " + totalAdmitted);
+        System.out.println("   ├─ Taburcu Edilen       : " + totalDischargedEstimate);
+        System.out.println("   └─ Halen Sistemde       : " + stillInSystem);
+
+        System.out.println("\n👥 HELENKİ HASTALAR (BST InOrder):");
+        if (stillInSystem > 0) {
+            System.out.println("   ├─ Hasta Listesi:");
+            patientTree.inOrder();
+        } else {
+            System.out.println("   └─ Hasta yok!");
+        }
+
+        int busyDoctors      = countBusyDoctors(doctorMap);
+        int totalDoctors     = 4;
+        int availableDoctors = totalDoctors - busyDoctors;
+
+        System.out.println("\n👨‍⚕️ DOKTOR DURUMU:");
+        System.out.println("   ├─ Toplam Doktor        : " + totalDoctors);
+        System.out.println("   ├─ Meşgul Doktor        : " + busyDoctors);
+        System.out.println("   └─ Müsait Doktor        : " + availableDoctors);
+
+        if (busyDoctors > 0) {
+            System.out.println("\n   Meşgul Doktorlar:");
+            listBusyDoctors(doctorMap);
+        }
+
+        System.out.println("\n╚═══════════════════════════════════════════════════════╝\n");
+    }
 }

@@ -6,31 +6,16 @@ import HelperClasses.BSTNode;
 
 
 public class Main {
+    static Room Reception = new Room("RO", "Reception");
+    static Room TreatmentRoomA = new Room("R1", "Treatment Room A");
+    static Room TreatmentRoomB = new Room("R2", "Treatment Room B");
+    static Room ICU = new Room("R3", "ICU");
+    static Room WaitingRoom = new Room("R4", "Waiting Room");
+    static Room Discharge = new Room("R5", "Discharge");
+    static int currentTime = 10;
+
     public static void main(String[] args) {
-        int currentTime = 10;
-
-        //ER Rooms
-        Room Reception = new Room("RO", "Reception");
-        Room TreatmentRoomA = new Room("R1", "Treatment Room A");
-        Room TreatmentRoomB = new Room("R2", "Treatment Room B");
-        Room ICU = new Room("R3", "ICU");
-        Room WaitingRoom = new Room("R4", "Waiting Room");
-        Room Discharge = new Room("R5", "Discharge");
-
-        Graph erGraph = new Graph();
-        erGraph.addVertex(Reception.id);
-        erGraph.addVertex(TreatmentRoomA.id);
-        erGraph.addVertex(TreatmentRoomB.id);
-        erGraph.addVertex(ICU.id);
-        erGraph.addVertex(WaitingRoom.id);
-        erGraph.addVertex(Discharge.id);
-
-        erGraph.addEdge(Reception.id, TreatmentRoomA.id, false);
-        erGraph.addEdge(Reception.id, WaitingRoom.id, false);
-        erGraph.addEdge(TreatmentRoomA.id, TreatmentRoomB.id, false);
-        erGraph.addEdge(TreatmentRoomA.id, ICU.id, false);
-        erGraph.addEdge(WaitingRoom.id, TreatmentRoomB.id, false);
-        erGraph.addEdge(TreatmentRoomB.id, Discharge.id, false);
+        Graph erGraph = initializeGraph();
 
         HashMap doctorMap = new HashMap();
         Stack stack = new Stack(10);
@@ -338,5 +323,25 @@ public class Main {
                 }
             }
         }
+    }
+
+    private static Graph initializeGraph() {
+        Graph erGraph = new Graph();
+
+        erGraph.addVertex(Reception.id);
+        erGraph.addVertex(TreatmentRoomA.id);
+        erGraph.addVertex(TreatmentRoomB.id);
+        erGraph.addVertex(ICU.id);
+        erGraph.addVertex(WaitingRoom.id);
+        erGraph.addVertex(Discharge.id);
+
+        erGraph.addEdge(Reception.id,     TreatmentRoomA.id, false);
+        erGraph.addEdge(Reception.id,     WaitingRoom.id,    false);
+        erGraph.addEdge(TreatmentRoomA.id, TreatmentRoomB.id, false);
+        erGraph.addEdge(TreatmentRoomA.id, ICU.id,           false);
+        erGraph.addEdge(WaitingRoom.id,   TreatmentRoomB.id, false);
+        erGraph.addEdge(TreatmentRoomB.id, Discharge.id,     false);
+
+        return erGraph;
     }
 }

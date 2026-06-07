@@ -25,7 +25,7 @@ public class Main {
         Stack actionStack = new Stack(100);
 
         Scanner scanner = new Scanner(System.in);
-        loadPatientsFromFile(patientTree, scanner, actionStack);
+        loadPatientsFromFile(patientTree, scanner, actionStack, currentTime);
 
         Patient highestPriorityPatient = findHighestPriorityPatient(patientTree.getRoot());
         if (highestPriorityPatient != null) {
@@ -44,6 +44,7 @@ public class Main {
         dischargeQueue.enqueue(highestPriorityPatient);
 
         dischargePatient(dischargeQueue, patientTree, erGraph);
+        searchAndPrintPatient(patientTree, scanner);
 
 
         printSystemSummary(patientTree, doctorMap);
@@ -195,7 +196,7 @@ public class Main {
 
         return doctorMap;
     }
-    private static void loadPatientsFromFile(BinarySearchTree patientTree, Scanner scanner, Stack actionStack) {
+    private static void loadPatientsFromFile(BinarySearchTree patientTree, Scanner scanner, Stack actionStack, int currentTime) {
         System.out.println("=== ACİL SERVİS SİSTEMİ VERİ YÜKLEME ===");
         System.out.print("Lütfen hasta listesi dosyasının (patient.txt) tam yolunu giriniz: ");
 
@@ -214,7 +215,7 @@ public class Main {
                     int severity      = Integer.parseInt(tokens[3].trim());
                     int arrivalTime   = Integer.parseInt(tokens[4].trim());
 
-                    Patient newPatient = new Patient(patientId, name, age, severity, arrivalTime);
+                    Patient newPatient = new Patient(patientId, name, age, severity, arrivalTime, currentTime);
                     actionStack.push("INTAKE:" + patientId);
                     patientTree.insert(newPatient);
 
@@ -333,6 +334,19 @@ public class Main {
             }
         } else if (parts[0].equals("INTAKE")) {
             System.out.println("[✓] Geri alındı: " + parts[1] + " intake işlemi iptal edildi.");
+        }
+    }
+
+    private static void searchAndPrintPatient(BinarySearchTree patientTree, Scanner scanner) {
+        System.out.print("\nAranacak hasta ID'sini giriniz (örn: P001): ");
+        String searchId = scanner.nextLine();
+        Patient foundPatient = patientTree.searchById(searchId);
+
+        if (foundPatient != null) {
+            System.out.println("\n[✓] HASTA BULUNDU!");
+            printPatientRecord(foundPatient);
+        } else {
+            System.out.println("\n[✗] Hasta bulunamadı! ID: " + searchId);
         }
     }
 }

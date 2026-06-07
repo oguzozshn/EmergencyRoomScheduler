@@ -11,13 +11,13 @@ public class Patient {
     public int assignedDocId = -1;
     public int priorityScore = -1;
 
-    public Patient(String id, String name, int age, int severity, int arrivalTime) {
+    public Patient(String id, String name, int age, int severity, int arrivalTime, int currentTime) {
         this.patientId = id;
         this.name = name;
         this.age = age;
         this.severity = severity;
         this.arrivalTime = arrivalTime;
-        this.priorityScore = calculatePriority(arrivalTime);
+        this.priorityScore = calculatePriority(currentTime);
     }
 
     public int calculatePriority(int currentTime) {

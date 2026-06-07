@@ -27,27 +27,41 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         int totalAdmitted = loadPatientsFromFile(patientTree, scanner, actionStack, currentTime);
 
-        Patient highestPriorityPatient = findHighestPriorityPatient(patientTree.getRoot());
-        if (highestPriorityPatient != null) {
-            System.out.println("\n=== Highest Priority Patient ===");
-            System.out.println("[" + highestPriorityPatient.patientId + "] " +
-                    highestPriorityPatient.name +
-                    " - Priority Score: " + highestPriorityPatient.priorityScore +
-                    " (Severity: " + highestPriorityPatient.severity + ")");
-
-            assignDoctorAndRoom(highestPriorityPatient, doctorMap, erGraph, actionStack);
-            undoLastAction(actionStack, doctorMap);
-        } else {
-            System.out.println("\n[WARNING]: No patients found!");
-        }
         Queue dischargeQueue = new Queue(10);
-        dischargeQueue.enqueue(highestPriorityPatient);
 
-        dischargePatient(dischargeQueue, patientTree, erGraph);
+        while (patientTree.getRoot() != null) {
+            Patient nextPatient = findHighestPriorityPatient(patientTree.getRoot());
+            if (nextPatient == null) break;
+
+            Doctor availableDoctor = findFirstAvailableDoctor(doctorMap);
+
+            if (availableDoctor == null) {
+                // Müsait doktor kalmadı, undo ile available yap
+                undoLastAction(actionStack, doctorMap);
+
+                // Tekrar kontrol et, hala yoksa limit dolmuş, çık
+                if (findFirstAvailableDoctor(doctorMap) == null) {
+                    System.out.println("\n[UYARI]: Günlük doktor limiti doldu, discharge'a geçiliyor...");
+                    break;
+                }
+                continue;
+            }
+
+            assignDoctorAndRoom(nextPatient, doctorMap, erGraph, actionStack);
+            dischargeQueue.enqueue(nextPatient);
+            patientTree.delete(nextPatient);
+        }
+
+        // Gün sonu discharge
+        int totalDischarged = 0;
+        while (!dischargeQueue.isEmpty()) {
+            dischargePatient(dischargeQueue, patientTree, erGraph);
+            totalDischarged++;
+        }
+
         searchAndPrintPatient(patientTree, scanner);
 
-
-        printSystemSummary(patientTree, doctorMap, totalAdmitted, 1);
+        printSystemSummary(patientTree, doctorMap, totalAdmitted, totalDischarged);
         scanner.close();
     }
 
@@ -250,8 +264,13 @@ public class Main {
 
             patient.assignedDocId = availableDoctor.id;
             patient.assignedRoom  = 1;
-            availableDoctor.status = "BUSY";
-            actionStack.push("ASSIGN:" + patient.patientId + ":" + availableDoctor.id); // ← ekle
+            availableDoctor.treatedCount++;
+
+            if (availableDoctor.treatedCount >= 2) {
+                availableDoctor.status = "BUSY"; // 2 hasta tedavi etti, gün sonu busy
+            }
+
+            actionStack.push("ASSIGN:" + patient.patientId + ":" + availableDoctor.id);
 
             System.out.println("[✓] " + patient.name + " -> " + availableDoctor.name + " (Oda: R1)");
             erGraph.BFSPath(Reception.id, "R1");

@@ -74,18 +74,20 @@ public class Main {
 
         Patient maxPatient = current.patient;
 
-        // Sol alt ağaçta kontrol et
         if (current.left != null) {
             Patient leftMax = findHighestPriorityPatient(current.left);
-            if (leftMax != null && leftMax.priorityScore > maxPatient.priorityScore) {
+            if (leftMax != null && (leftMax.priorityScore > maxPatient.priorityScore ||
+                    (leftMax.priorityScore == maxPatient.priorityScore &&
+                            leftMax.arrivalTime < maxPatient.arrivalTime))) {
                 maxPatient = leftMax;
             }
         }
 
-        // Sağ alt ağaçta kontrol et
         if (current.right != null) {
             Patient rightMax = findHighestPriorityPatient(current.right);
-            if (rightMax != null && rightMax.priorityScore > maxPatient.priorityScore) {
+            if (rightMax != null && (rightMax.priorityScore > maxPatient.priorityScore ||
+                    (rightMax.priorityScore == maxPatient.priorityScore &&
+                            rightMax.arrivalTime < maxPatient.arrivalTime))) {
                 maxPatient = rightMax;
             }
         }

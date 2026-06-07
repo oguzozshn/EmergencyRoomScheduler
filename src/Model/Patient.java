@@ -19,6 +19,7 @@ public class Patient {
         this.severity = severity;
         this.arrivalTime = arrivalTime;
         this.priorityScore = calculatePriority(arrivalTime);
+        this.actionStack.push("Intake");
 
     }
 

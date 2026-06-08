@@ -13,10 +13,10 @@ public class Main {
     static Room WaitingRoom = new Room("R4", "Waiting Room");
     static Room Discharge = new Room("R5", "Discharge");
     static int currentTime = 10;
-    static Doctor d1 = new Doctor(101, "Dr. Alice Carter",  "AVAILABLE");
-    static Doctor d2 = new Doctor(202, "Dr. Ben Nguyen",    "AVAILABLE");
-    static Doctor d3 = new Doctor(303, "Dr. Clara Hassan",  "AVAILABLE");
-    static Doctor d4 = new Doctor(404, "Dr. David Reyes",   "AVAILABLE");
+    static Doctor d1 = new Doctor(101, "Dr. Alice Carter","AVAILABLE");
+    static Doctor d2 = new Doctor(202, "Dr. Ben Nguyen","AVAILABLE");
+    static Doctor d3 = new Doctor(303, "Dr. Clara Hassan","AVAILABLE");
+    static Doctor d4 = new Doctor(404, "Dr. David Reyes","AVAILABLE");
 
     public static void main(String[] args) {
         Graph erGraph = initializeGraph();
@@ -36,12 +36,10 @@ public class Main {
             Doctor availableDoctor = findFirstAvailableDoctor(doctorMap);
 
             if (availableDoctor == null) {
-                // Müsait doktor kalmadı, undo ile available yap
                 undoLastAction(actionStack, doctorMap);
 
-                // Tekrar kontrol et, hala yoksa limit dolmuş, çık
                 if (findFirstAvailableDoctor(doctorMap) == null) {
-                    System.out.println("\n[UYARI]: Günlük doktor limiti doldu, discharge'a geçiliyor...");
+                    System.out.println("\nwarning: No available doctors. System halted.");
                     break;
                 }
                 continue;
@@ -65,22 +63,6 @@ public class Main {
         scanner.close();
     }
 
-    private static void printPatientRecord(Patient patient) {
-        System.out.println("\n╔════════════════════════════════════════╗");
-        System.out.println("║        HASTA KAYDı DETAYLARI           ║");
-        System.out.println("╚════════════════════════════════════════╝");
-        System.out.println("📋 Hasta ID        : " + patient.patientId);
-        System.out.println("👤 Adı Soyadı      : " + patient.name);
-        System.out.println("📅 Yaş             : " + patient.age);
-        System.out.println("🚨 Aciliyet Derecesi : " + patient.severity + "/5");
-        System.out.println("🕐 Geliş Zamanı    : " + patient.arrivalTime);
-        System.out.println("⭐ Öncelik Skoru   : " + patient.priorityScore);
-        System.out.println("🏥 Atanan Oda     : " + (patient.assignedRoom != -1 ? "R" + patient.assignedRoom : "Belirlenmedi"));
-        System.out.println("👨‍⚕️ Atanan Doktor   : " + (patient.assignedDocId != -1 ? "Dr. ID: " + patient.assignedDocId : "Belirlenmedi"));
-        System.out.println("════════════════════════════════════════\n");
-    }
-
-    // === EN YÜKSEK PRİYORİTE HASTASINI BULAN HELPER METODU ===
     private static Patient findHighestPriorityPatient(BSTNode current) {
         if (current == null) {
             return null;
@@ -108,10 +90,7 @@ public class Main {
 
         return maxPatient;
     }
-
-    // === İLK AVAILABLE (MÜSAIT) DOKTORU BULAN HELPER METODU ===
     private static Doctor findFirstAvailableDoctor(HashMap doctorMap) {
-        // HashMap'in internal table'ına eriş
         HelperClasses.HashMapNode[] table = doctorMap.getTable();
 
         for (int i = 0; i < table.length; i++) {
@@ -121,7 +100,6 @@ public class Main {
                 while (node != null) {
                     Doctor doctor = (Doctor) node.value;
 
-                    // Eğer doktor müsaitse onu döndür
                     if (doctor.status.equals("AVAILABLE")) {
                         return doctor;
                     }
@@ -130,18 +108,9 @@ public class Main {
             }
         }
 
-        return null; // Müsait doktor yok
+        return null;
     }
 
-    // === TOPLAM HASTA SAYISINI BULAN HELPER METODU ===
-    private static int countTotalPatients(BSTNode current) {
-        if (current == null) {
-            return 0;
-        }
-        return 1 + countTotalPatients(current.left) + countTotalPatients(current.right);
-    }
-
-    // === MEŞGUL DOKTOR SAYISINI BULAN HELPER METODU ===
     private static int countBusyDoctors(HashMap doctorMap) {
         HelperClasses.HashMapNode[] table = doctorMap.getTable();
         int busyCount = 0;
@@ -162,8 +131,6 @@ public class Main {
 
         return busyCount;
     }
-
-    // === MEŞGUL DOKTORLARI LISTELEYEN HELPER METODU ===
     private static void listBusyDoctors(HashMap doctorMap) {
         HelperClasses.HashMapNode[] table = doctorMap.getTable();
 
@@ -214,7 +181,7 @@ public class Main {
     }
     private static int loadPatientsFromFile(BinarySearchTree patientTree, Scanner scanner, Stack actionStack, int currentTime) {
         int count = 0;
-        System.out.println("=== ACİL SERVİS SİSTEMİ VERİ YÜKLEME ===");
+        System.out.println("=== Emergency Room (ER) ===");
         System.out.print("Lütfen hasta listesi dosyasının (patient.txt) tam yolunu giriniz: ");
 
         String filePath = scanner.nextLine();
@@ -237,21 +204,12 @@ public class Main {
                     patientTree.insert(newPatient);
                     count++;
 
-                    System.out.println("[KABUL BAŞARILI] " + patientId + " kodlu " + name + " ağaca eklendi.");
+                    System.out.println("[Intake Successful] " + patientId + name + "added to patient tree.");
                 }
             }
-
-            System.out.println("\n[SİSTEM]: Tüm hastalar başarıyla okundu ve BST'ye kaydedildi.");
-            System.out.println("\n=== BST GÜNCEL DURUM (InOrder Sıralı) ===");
-            patientTree.inOrder();
-
         } catch (IOException e) {
-            System.out.println("\n[HATA]: Dosya okunamadı! Girdiğiniz dizin yolunu kontrol edin.");
-            System.out.println("Girilen Yol: " + filePath);
-        } catch (NumberFormatException e) {
-            System.out.println("\n[HATA]: Sayısal alanlarda hatalı format var!");
+            System.out.println("Error reading file: " + e.getMessage());
         }
-
         return count;
     }
 
@@ -259,8 +217,6 @@ public class Main {
         Doctor availableDoctor = findFirstAvailableDoctor(doctorMap);
 
         if (availableDoctor != null) {
-            System.out.println("\n=== DOKTOR ATAMASI ===");
-            System.out.println("Müsait Doktor Bulundu: [" + availableDoctor.id + "] " + availableDoctor.name);
 
             patient.assignedDocId = availableDoctor.id;
             availableDoctor.treatedCount++;
@@ -269,7 +225,6 @@ public class Main {
                 availableDoctor.status = "BUSY";
             }
 
-            // Severity'e göre oda belirle
             String targetRoom;
             if (patient.severity == 1) {
                 targetRoom = ICU.id;
@@ -283,74 +238,59 @@ public class Main {
             }
 
             actionStack.push("ASSIGN:" + patient.patientId + ":" + availableDoctor.id);
-
-            System.out.println("[✓] " + patient.name + " -> " + availableDoctor.name + " (Oda: " + targetRoom + ")");
             erGraph.BFSPath(Reception.id, targetRoom);
         } else {
-            System.out.println("\n[UYARI]: Müsait doktor bulunamadı!");
+            System.out.println("\n[Warning]: No available doctor found!");
         }
     }
 
     private static void dischargePatient(Queue dischargeQueue, BinarySearchTree patientTree, Graph erGraph) {
         if (!dischargeQueue.isEmpty()) {
-            System.out.println("\n=== HASTANIN TABURCU PROSESİ ===");
+            System.out.println("\n=== Patient Discharge ===");
 
             Patient dischargedPatient = dischargeQueue.dequeue();
-            System.out.println("[→] Kuyruktan çıkarılan hasta: " + dischargedPatient.name);
+            System.out.println("Discharged patient: " + dischargedPatient.name);
 
             if (dischargedPatient.assignedRoom != -1) {
                 String treatmentRoom = "R" + dischargedPatient.assignedRoom;
-                System.out.println("\n[📍] Taburcu yolu: " + treatmentRoom + " → R5");
+                System.out.println("\nDischarge path: " + treatmentRoom + " → R5");
                 erGraph.BFSPath(treatmentRoom, "R5");
             }
-
-            System.out.println("\n[🗑️] Hasta BST'den siliniyor...");
             patientTree.delete(dischargedPatient);
-            System.out.println("[✓] " + dischargedPatient.name + " başarıyla taburcu edildi!");
-            System.out.println("[✓] Hasta veri tabanından silindi.");
+            System.out.println("[✓] " + dischargedPatient.name + " successfully discharged.");
         } else {
-            System.out.println("\n[UYARI]: Taburcu edilecek hasta yok!");
+            System.out.println("\n[Warning]: No patient to discharge!");
         }
     }
     private static void printSystemSummary(BinarySearchTree patientTree, HashMap doctorMap, int totalAdmitted, int totalDischarged) {
-        System.out.println("\n╔═══════════════════════════════════════════════════════╗");
-        System.out.println("║          ACİL SERVİS SİSTEMİ - SISTEM ÖZETİ           ║");
-        System.out.println("╚═══════════════════════════════════════════════════════╝");
+        System.out.println("=== ER END OF THE DAY ===");
 
         int stillInSystem = totalAdmitted - totalDischarged;
-        System.out.println("\n📊 HASTA SAYILARI:");
-        System.out.println("   ├─ Toplam Kabul Edilen  : " + totalAdmitted);
-        System.out.println("   ├─ Taburcu Edilen       : " + totalDischarged );
-        System.out.println("   └─ Halen Sistemde       : " + stillInSystem);
+        System.out.println("\n📊 Number of Patients:");
+        System.out.println("   ├─ Total admitted patient              : " + totalAdmitted);
+        System.out.println("   ├─ Patients discharged                 : " + totalDischarged );
+        System.out.println("   └─ Patients still in the hospital      : " + stillInSystem);
 
-        System.out.println("\n👥 HELENKİ HASTALAR (BST InOrder):");
+        System.out.println("\n👥 Patients still in the hospital (BST InOrder):");
         if (stillInSystem > 0) {
-            System.out.println("   ├─ Hasta Listesi:");
+            System.out.println("   ├─ Patients");
             patientTree.inOrder();
         } else {
-            System.out.println("   └─ Hasta yok!");
+            System.out.println("   └─ No patients");
         }
 
         int busyDoctors      = countBusyDoctors(doctorMap);
         int totalDoctors     = 4;
         int availableDoctors = totalDoctors - busyDoctors;
 
-        System.out.println("\n👨‍⚕️ DOKTOR DURUMU:");
-        System.out.println("   ├─ Toplam Doktor        : " + totalDoctors);
-        System.out.println("   ├─ Meşgul Doktor        : " + busyDoctors);
-        System.out.println("   └─ Müsait Doktor        : " + availableDoctors);
-
-        if (busyDoctors > 0) {
-            System.out.println("\n   Meşgul Doktorlar:");
-            listBusyDoctors(doctorMap);
-        }
-
-        System.out.println("\n╚═══════════════════════════════════════════════════════╝\n");
+        System.out.println("\n DOKTOR DURUMU:");
+        System.out.println("   ├─ Total Doctors            : " + totalDoctors);
+        System.out.println("   ├─ BUsy Doctors             : " + busyDoctors);
+        System.out.println("   └─ Available Doctors        : " + availableDoctors);
     }
 
     private static void undoLastAction(Stack actionStack, HashMap doctorMap) {
         if (actionStack.isEmpty()) {
-            System.out.println("\n[UYARI]: Geri alınacak işlem yok!");
             return;
         }
 
@@ -364,23 +304,19 @@ public class Main {
             Doctor doctor = (Doctor) doctorMap.get(doctorId);
             if (doctor != null) {
                 doctor.status = "AVAILABLE";
-                System.out.println("[✓] Geri alındı: " + doctor.name + " tekrar müsait.");
             }
-        } else if (parts[0].equals("INTAKE")) {
-            System.out.println("[✓] Geri alındı: " + parts[1] + " intake işlemi iptal edildi.");
         }
     }
 
     private static void searchAndPrintPatient(BinarySearchTree patientTree, Scanner scanner) {
-        System.out.print("\nAranacak hasta ID'sini giriniz (örn: P001): ");
+        System.out.print("\nType the patient ID to search:");
         String searchId = scanner.nextLine();
         Patient foundPatient = patientTree.searchById(searchId);
 
         if (foundPatient != null) {
-            System.out.println("\n[✓] HASTA BULUNDU!");
-            printPatientRecord(foundPatient);
+            System.out.println("\nPatient found: " + foundPatient.name + " (ID: " + foundPatient.patientId);
         } else {
-            System.out.println("\n[✗] Hasta bulunamadı! ID: " + searchId);
+            System.out.println("\nPatient could not be found.");
         }
     }
 }

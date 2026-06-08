@@ -311,7 +311,7 @@ public class Main {
     private static void searchAndPrintPatient(BinarySearchTree patientTree, Scanner scanner) {
         System.out.print("\nType the patient ID to search:");
         String searchId = scanner.nextLine();
-        Patient foundPatient = patientTree.searchById(searchId);
+        Patient foundPatient = patientTree.search(searchId);
 
         if (foundPatient != null) {
             System.out.println("\nPatient found: " + foundPatient.name + " (ID: " + foundPatient.patientId);

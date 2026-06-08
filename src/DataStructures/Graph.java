@@ -1,18 +1,33 @@
 package DataStructures;
-import HelperClasses.HashMapNode;
 import HelperClasses.LLNode;
 
+/**
+ * Graph implementation using adjacency list representation.
+ */
 public class Graph {
     private HashMap map = new HashMap();
-    private LinkedList list = new LinkedList();
 
+    /**
+     * Constructor for Graph.
+     */
     public Graph(){}
 
+    /**
+     * Adds a vertex to the graph.
+     * @param roomId
+     */
     public void addVertex(String roomId) {
         if (map.get(roomId) == null) {
             map.put(roomId, new LinkedList());
         }
     }
+
+    /**
+     * Adds an edge between two vertices in the graph.
+     * @param source
+     * @param destination
+     * @param bidirectional
+     */
     public void addEdge(String source, String destination, boolean bidirectional) {
         if (map.get(source) == null) addVertex(source);
         if (map.get(destination) == null) addVertex(destination);
@@ -26,70 +41,33 @@ public class Graph {
         }
     }
 
-
-    public void BFS(int startRoomId) {
-        if (map.get(startRoomId) == null) return;
-
-        LinkedList visited = new LinkedList(); // Ziyaret edilenleri tutan listemiz
-        MiniQueue queue = new MiniQueue();     // Sadece bu metot için yazdığımız kuyruk
-
-        // Başlangıç düğümünü kuyruğa al ve ziyaret edildi olarak işaretle
-        queue.enqueue(startRoomId);
-        visited.add(startRoomId);
-
-        System.out.print("BFS (Genişlik Öncelikli) Navigasyon Sırası: ");
-
-        while (!queue.isEmpty()) {
-            int current = queue.dequeue();
-            System.out.print(current + " -> ");
-
-            // Mevcut odanın komşularını al
-            LinkedList neighbors = (LinkedList) map.get(current);
-            if (neighbors != null) {
-                // HATA DÜZELTME: getHead() kullanarak zincire eriştik
-                LLNode neighborNode = neighbors.getHead();
-                while (neighborNode != null) {
-                    int neighborId = (int) neighborNode.data;
-
-                    // Eğer komşu daha önce ziyaret edilmediyse kuyruğa ekle
-                    if (!visited.contains(neighborId)) {
-                        visited.add(neighborId);
-                        queue.enqueue(neighborId);
-                    }
-                    neighborNode = neighborNode.next;
-                }
-            }
-        }
-        System.out.println("BİTTİ");
-    }
-
-    // =========================================================
-    // 🌟 DFS (DEPTH-FIRST SEARCH) - DERİNLEMESİNE GEZİNTİ
-    // =========================================================
+    /**
+     * Depth-first search traversal starting from a given room.
+     * @param startRoomId
+     */
     public void DFS(int startRoomId) {
         if (map.get(startRoomId) == null) return;
 
-        LinkedList visited = new LinkedList(); // Ziyaret edilenleri tutacak liste
-        System.out.print("DFS (Derinlik Öncelikli) Navigasyon Sırası: ");
+        LinkedList visited = new LinkedList();
 
-        // Özyinelemeli (Recursive) yardımcı fonksiyonu tetikliyoruz
         dfsHelper(startRoomId, visited);
-        System.out.println("BİTTİ");
     }
 
+    /**
+     * Depth-first search traversal helper method.
+     * @param current
+     * @param visited
+     */
     private void dfsHelper(int current, LinkedList visited) {
-        // Mevcut odayı ziyaret et ve ekrana bas
         visited.add(current);
         System.out.print(current + " -> ");
 
-        // Komşularını al ve derinlemesine ilerle
         LinkedList neighbors = (LinkedList) map.get(current);
         if (neighbors != null) {
             LLNode neighborNode = neighbors.getHead();
             while (neighborNode != null) {
                 int neighborId = (int) neighborNode.data;
 
-                // Ziyaret edilmemiş bir komşu bulduğun an doğrudan onun içine dal!
                 if (!visited.contains(neighborId)) {
                     dfsHelper(neighborId, visited);
                 }
@@ -98,18 +76,23 @@ public class Graph {
         }
     }
 
-    // =========================================================
-    // 🌟 STRING ID İLE BFS - ODALAR ARASI NAVIGASYON
-    // =========================================================
-    public void BFSPath(String startRoomId, String endRoomId) {
-        if (map.get(startRoomId) == null || map.get(endRoomId) == null) {
-            System.out.println("[HATA]: Başlangıç veya hedef oda bulunamadı!");
-            return;
-        }
+    /**
+     * Performs a Breadth-First Search (BFS) traversal starting from the given room
+     * and finds the shortest path to the target room if it exists.
+     *
+     * The method utilizes a queue and a visited list to explore the graph level by level,
+     * and a parent map to reconstruct the shortest path if the destination is reachable.
+     * If the destination room is found, the traversal path is printed.
+     * Otherwise, a warning message is printed indicating the target room is inaccessible.
+     *
+     * @param startRoomId the ID of the starting room from which the BFS traversal begins
+     * @param endRoomId the ID of the target room that the BFS traversal attempts to reach
+     */
+    public void BFS(String startRoomId, String endRoomId) {
 
         LinkedList visited = new LinkedList();
         MiniQueueString queue = new MiniQueueString();
-        HashMap parentMap = new HashMap(); // her node'un parent'ını tutar
+        HashMap parentMap = new HashMap();
 
         queue.enqueue(startRoomId);
         visited.add(startRoomId);
@@ -133,7 +116,7 @@ public class Graph {
                     if (!visited.contains(neighborId)) {
                         visited.add(neighborId);
                         queue.enqueue(neighborId);
-                        parentMap.put(neighborId, current); // parent'ı kaydet
+                        parentMap.put(neighborId, current);
                     }
                     neighborNode = neighborNode.next;
                 }
@@ -141,7 +124,6 @@ public class Graph {
         }
 
         if (found) {
-            // Yolu geriye doğru takip et
             LinkedList path = new LinkedList();
             String step = endRoomId;
             while (!step.equals("NULL")) {
@@ -150,8 +132,8 @@ public class Graph {
             }
 
             // Yazdır
-            System.out.println("\n=== BFS EN KISA YOLU ===");
-            System.out.print("Rota: ");
+            System.out.println("\n=== BFS SHORTEST PATH===");
+            System.out.print("Routh: ");
             LLNode node = path.getHead();
             while (node != null) {
                 System.out.print("[" + node.data + "]");
@@ -159,43 +141,17 @@ public class Graph {
                 node = node.next;
             }
             System.out.println();
-        } else {
-            System.out.println("[UYARI]: Hedef odaya ulaşılamadı!");
         }
     }
 
-    // =========================================================
-    // 🚨 BFS İÇİN GEREKLİ GİZLİ MİNİ KUYRUK (QUEUE) SINIFI
-    // =========================================================
-    private class MiniQueue {
-        private LLNode front, rear;
-
-        public void enqueue(int data) {
-            LLNode newNode = new LLNode(data);
-            if (rear == null) {
-                front = rear = newNode;
-                return;
-            }
-            rear.next = newNode;
-            rear = newNode;
-        }
-
-        public int dequeue() {
-            if (front == null) return -1;
-            int data = (int) front.data;
-            front = front.next;
-            if (front == null) rear = null;
-            return data;
-        }
-
-        public boolean isEmpty() {
-            return front == null;
-        }
-    }
-
-    // =========================================================
-    // 🚨 STRING İÇİN MINI KUYRUK SINIFI
-    // =========================================================
+    /**
+     * Represents a simple queue structure for storing and managing String data
+     * using a linked list implementation.
+     *
+     * This class provides basic queue operations such as adding an element
+     * to the end of the queue (enqueue), removing an element from the front
+     * of the queue (dequeue), and checking if the queue is empty.
+     */
     private class MiniQueueString {
         private LLNode front, rear;
 

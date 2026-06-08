@@ -238,7 +238,7 @@ public class Main {
             }
 
             actionStack.push("ASSIGN:" + patient.patientId + ":" + availableDoctor.id);
-            erGraph.BFSPath(Reception.id, targetRoom);
+            erGraph.BFS(Reception.id, targetRoom);
         } else {
             System.out.println("\n[Warning]: No available doctor found!");
         }
@@ -254,7 +254,7 @@ public class Main {
             if (dischargedPatient.assignedRoom != -1) {
                 String treatmentRoom = "R" + dischargedPatient.assignedRoom;
                 System.out.println("\nDischarge path: " + treatmentRoom + " → R5");
-                erGraph.BFSPath(treatmentRoom, "R5");
+                erGraph.BFS(treatmentRoom, "R5");
             }
             patientTree.delete(dischargedPatient);
             System.out.println("[✓] " + dischargedPatient.name + " successfully discharged.");

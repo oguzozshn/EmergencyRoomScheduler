@@ -1,7 +1,5 @@
 package HelperClasses;
 
-import DataStructures.HashMap;
-
 public class HashMapNode {
     public Object key;
     public Object value;
@@ -12,5 +10,4 @@ public class HashMapNode {
         this.value = value;
         this.next = null;
     }
-
 }

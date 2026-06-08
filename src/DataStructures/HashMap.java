@@ -1,25 +1,33 @@
 package DataStructures;
 
 import HelperClasses.HashMapNode;
-import Model.Doctor;
-import HelperClasses.LLNode;
-
-import java.io.Console;
 import java.util.Objects;
 
+/**
+ * Implementation of a HashMap data structure using separate chaining for collision resolution.
+ */
 public class HashMap {
-    private HashMapNode[] table; //entry
-    private int capacity = 5;
+    private HashMapNode[] table;
+    private int capacity = 11;
 
-
+    /**
+     * Constructor for HashMap, initializes the table with default capacity.
+     */
     public HashMap() {
         table = new HashMapNode[capacity];
     }
 
+    /**
+     * Inserts a key-value pair into the HashMap.
+     * If the key already exists, updates the associated value.
+     * @param key The key to be inserted or updated.
+     * @param value The value associated with the key.
+     */
     public void put(String key, Object value){
         String hash = HashFunction(key);
-        HashMapNode node = new HashMapNode(key, value, null);
         int hashInt = Integer.parseInt(hash);
+
+        HashMapNode node = new HashMapNode(key, value, null);
 
         if (table[hashInt] == null) {
             table[hashInt] = node;
@@ -46,6 +54,12 @@ public class HashMap {
         }
     }
 
+    /**
+     * Inserts an integer key-value pair into the HashMap.
+     * If the key already exists, updates the associated value.
+     * @param key The integer key to be inserted or updated.
+     * @param value The value associated with the key.
+     */
     public void put(int key, Object value){
         int hash = HashFunction(key);
         HashMapNode node = new HashMapNode(key, value, null);
@@ -75,9 +89,15 @@ public class HashMap {
         }
     }
 
+    /**
+     * Retrieves the value associated with the given key.
+     * @param key The key for which to retrieve the value.
+     * @return The value associated with the key, or null if the key is not found.
+     */
     public Object get(String key){
         String hash = HashFunction(key);
         int hashInt = Integer.parseInt(hash);
+
         if (table[hashInt] == null) {
             return null;
         }else {
@@ -92,6 +112,11 @@ public class HashMap {
         }
     }
 
+    /**
+     * Retrieves the value associated with the given integer key.
+     * @param key The integer key for which to retrieve the value.
+     * @return The value associated with the key, or null if the key is not found.
+     */
     public Object get(int key){
         int hash = HashFunction(key);
 
@@ -109,6 +134,11 @@ public class HashMap {
         }
     }
 
+    /**
+     * Removes the key-value pair associated with the given string key.
+     * @param key The string key to remove.
+     * @return true if the key was found and removed, false otherwise.
+     */
     public boolean remove(String key){
         String hash = HashFunction(key);
         int hashInt = Integer.parseInt(hash);
@@ -135,6 +165,11 @@ public class HashMap {
         }
     }
 
+    /**
+     * Removes the key-value pair associated with the given integer key.
+     * @param key The integer key to remove.
+     * @return true if the key was found and removed, false otherwise.
+     */
     public boolean remove(int key){
         int hash = HashFunction(key);
         if (table[hash] == null) {
@@ -160,6 +195,9 @@ public class HashMap {
         }
     }
 
+    /**
+     * Displays the contents of the hash map.
+     */
     public void display(){
         for (int i = 0; i < table.length; i++) {
             if (table[i] != null) {
@@ -172,36 +210,38 @@ public class HashMap {
         }
     }
 
+    /**
+     * Hash function for string keys.
+     */
     public String HashFunction(String id) {
-        // String'in her karakterini kontrol et
         int hash = 0;
 
-        // Karakterlerin pozisyonuna göre ağırlıklı değer ekle
         for (int i = 0; i < id.length(); i++) {
-            char c = id.charAt(i);  // i'inci karakteri al
-            int charValue = c - 'A'; // 'A' = 0, 'B' = 1, vb. (0-25 arası)
+            char c = id.charAt(i);
+            int charValue = c - 'A';
 
-            // Eğer digit ise (0-9)
             if (c >= '0' && c <= '9') {
-                charValue = c - '0'; // '0' = 0, '1' = 1, vb. (0-9 arası)
+                charValue = c - '0';
             }
 
-            hash = hash + (charValue * (i + 1)); // Her karaktere pozisyonu ağırlık olarak ekle
+            hash = hash + (charValue * (i + 1));
         }
-
-        // Negative değerleri pozitif yap
         if (hash < 0) {
             hash = hash * -1;
         }
-
-        // Capacity'e göre mod al
         return Integer.toString(hash % capacity);
     }
 
+    /**
+     * Hash function for integer keys.
+     */
     public int HashFunction(int id) {
         return Math.abs(id) % capacity;
     }
 
+    /**
+     * Getter for the hash map table.
+     */
     public HashMapNode[] getTable() {
         return this.table;
     }

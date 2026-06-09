@@ -1,20 +1,34 @@
 package DataStructures;
 
-// 🚨 EN ÖNEMLİ EKSİK: LLNode'u buraya tanıtıyoruz
 import HelperClasses.LLNode;
 
+/**
+ * Represents a singly linked list data structure.
+ */
 public class LinkedList {
     private LLNode head;
 
+    /**
+     * Constructs an empty linked list.
+     */
     public LinkedList() {
         this.head = null;
     }
 
-    // 🌟 Graph sınıfının BFS/DFS yaparken listeyi tarayabilmesi için bu şart:
+    /**
+     * Returns the head node of the linked list.
+     *
+     * @return the head node
+     */
     public LLNode getHead() {
         return this.head;
     }
 
+    /**
+     * Adds a new node with the given data to the end of the linked list.
+     *
+     * @param data the data to be added
+     */
     public void add(Object data) {
         LLNode newNode = new LLNode(data);
         if (this.head == null) {
@@ -28,6 +42,11 @@ public class LinkedList {
         }
     }
 
+    /**
+     * Checks if the linked list contains the given target.
+     * @param target the target to search for
+     * @return true if the target is found, false otherwise
+     */
     public boolean contains(Object target) {
         LLNode current = this.head;
         while (current != null) {
@@ -39,6 +58,10 @@ public class LinkedList {
         return false;
     }
 
+    /**
+     * Returns the number of elements in the linked list.
+     * @return the number of elements in the linked list
+     */
     public int size() {
         int count = 0;
         LLNode current = this.head;
@@ -49,16 +72,10 @@ public class LinkedList {
         return count;
     }
 
-    public void display() {
-        LLNode current = this.head;
-        while (current != null) {
-            System.out.print(current.data + " ");
-            current = current.next;
-        }
-        System.out.println();
-    }
-
-    @Override
+    /**
+     * Returns a string representation of the linked list.
+     * @return a string representation of the linked list
+     */
     public String toString() {
         StringBuilder sb = new StringBuilder();
         LLNode current = this.head;
@@ -69,6 +86,10 @@ public class LinkedList {
         return sb.toString().trim();
     }
 
+    /**
+     * Adds a new element to the beginning of the linked list.
+     * @param data the data to add
+     */
     public void addFirst(Object data) {
         LLNode newNode = new LLNode(data);
         newNode.next = this.head;

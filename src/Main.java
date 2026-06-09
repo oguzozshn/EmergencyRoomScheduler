@@ -2,7 +2,7 @@ import DataStructures.*;
 import Model.*;
 import java.io.*;
 import java.util.Scanner;
-import HelperClasses.BSTNode;
+import HelperClasses.*;
 
 
 public class Main {
@@ -29,28 +29,20 @@ public class Main {
 
         Queue dischargeQueue = new Queue(10);
 
+        // patientTree filled in loadPatientsFromFile()
         while (patientTree.getRoot() != null) {
             Patient nextPatient = findHighestPriorityPatient(patientTree.getRoot());
             if (nextPatient == null) break;
 
-            Doctor availableDoctor = findFirstAvailableDoctor(doctorMap);
-
-            if (availableDoctor == null) {
-                undoLastAction(actionStack, doctorMap);
-
-                if (findFirstAvailableDoctor(doctorMap) == null) {
-                    System.out.println("\nwarning: No available doctors. System halted.");
-                    break;
-                }
-                continue;
+            boolean assigned = assignDoctorAndRoom(nextPatient, doctorMap, erGraph, actionStack);
+            if (assigned) {
+                dischargeQueue.enqueue(nextPatient);
+                patientTree.delete(nextPatient);
+            }else {
+                break;
             }
-
-            assignDoctorAndRoom(nextPatient, doctorMap, erGraph, actionStack);
-            dischargeQueue.enqueue(nextPatient);
-            patientTree.delete(nextPatient);
         }
 
-        // Gün sonu discharge
         int totalDischarged = 0;
         while (!dischargeQueue.isEmpty()) {
             dischargePatient(dischargeQueue, patientTree, erGraph);
@@ -63,6 +55,14 @@ public class Main {
         scanner.close();
     }
 
+    /**
+     * Recursively traverses a binary search tree (BST) to find the patient with the highest priority based on their priority score.
+     * In cases where priority scores are equal, the patient with the earlier arrival time is considered to have higher priority.
+     *
+     * @param current The current node of the BST being evaluated in the traversal process.
+     * @return The patient with the highest priority in the subtree rooted at the specified node,
+     * or null if the subtree is empty (i.e., the current node is null).
+     */
     private static Patient findHighestPriorityPatient(BSTNode current) {
         if (current == null) {
             return null;
@@ -90,12 +90,22 @@ public class Main {
 
         return maxPatient;
     }
+
+    /**
+     * Searches through the given HashMap of doctors and finds the first doctor
+     * with a status of "AVAILABLE".
+     *
+     * @param doctorMap The HashMap containing the doctors, where each entry
+     *                  represents a doctor object mapped to a specific key.
+     * @return The first doctor with a status of "AVAILABLE", or null if no
+     *         available doctor is found.
+     */
     private static Doctor findFirstAvailableDoctor(HashMap doctorMap) {
-        HelperClasses.HashMapNode[] table = doctorMap.getTable();
+        HashMapNode[] table = doctorMap.getTable();
 
         for (int i = 0; i < table.length; i++) {
             if (table[i] != null) {
-                HelperClasses.HashMapNode node = table[i];
+                HashMapNode node = table[i];
 
                 while (node != null) {
                     Doctor doctor = (Doctor) node.value;
@@ -179,17 +189,30 @@ public class Main {
 
         return doctorMap;
     }
+
+    /**
+     * Loads patient data from a file, parses the information, and inserts the patient records into a binary search tree.
+     * Each successfully loaded patient is also recorded as an "INTAKE" operation in the provided action stack.
+     *
+     * @param patientTree The binary search tree where the patient records will be inserted.
+     * @param scanner The scanner used for user input to specify the file path.
+     * @param actionStack The stack used for tracking actions, such as patient intake.
+     * @param currentTime The current system time, used to calculate patient attributes.
+     * @return The number of patients successfully loaded into the binary search tree.
+     */
     private static int loadPatientsFromFile(BinarySearchTree patientTree, Scanner scanner, Stack actionStack, int currentTime) {
         int count = 0;
         System.out.println("=== Emergency Room (ER) ===");
-        System.out.print("Lütfen hasta listesi dosyasının (patient.txt) tam yolunu giriniz: ");
+        System.out.print("Please enter the full path of the patient list file: ");
 
         String filePath = scanner.nextLine();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
+        try {
+            Scanner fileScanner = new Scanner(new File(filePath));
 
-            while ((line = br.readLine()) != null) {
+            while (fileScanner.hasNextLine()) {
+                String line = fileScanner.nextLine();
+                //tokens is an array of strings, each representing a comma-separated token in the line
                 String[] tokens = line.split(",");
 
                 if (tokens.length >= 5) {
@@ -204,16 +227,32 @@ public class Main {
                     patientTree.insert(newPatient);
                     count++;
 
-                    System.out.println("[Intake Successful] " + patientId + name + "added to patient tree.");
+                    System.out.println("[Intake Successful] " + patientId + " " + name + " added to patient tree.");
                 }
             }
+            fileScanner.close();
+
         } catch (IOException e) {
             System.out.println("Error reading file: " + e.getMessage());
         }
+
         return count;
     }
 
-    private static void assignDoctorAndRoom(Patient patient, HashMap doctorMap, Graph erGraph, Stack actionStack) {
+    /**
+     * Assigns a doctor and a treatment room to a patient based on their severity level,
+     * and updates the doctor's status and patient details accordingly. If no available
+     * doctor is found, a warning is printed.
+     *
+     * @param patient The patient who needs to be assigned a doctor and a treatment room.
+     * @param doctorMap A HashMap containing the available doctors, where each entry
+     *                  represents a doctor object mapped to a specific key.
+     * @param erGraph The hospital's graph structure representing rooms and their
+     *                connections, used for determining the path for the patient.
+     * @param actionStack A stack recording actions performed during the assignment process,
+     *                    such as doctor and room assignments.
+     */
+    private static boolean assignDoctorAndRoom(Patient patient, HashMap doctorMap, Graph erGraph, Stack actionStack) {
         Doctor availableDoctor = findFirstAvailableDoctor(doctorMap);
 
         if (availableDoctor != null) {
@@ -221,6 +260,7 @@ public class Main {
             patient.assignedDocId = availableDoctor.id;
             availableDoctor.treatedCount++;
 
+            //This suggests a doctor can treat 2 patients in a day
             if (availableDoctor.treatedCount >= 2) {
                 availableDoctor.status = "BUSY";
             }
@@ -239,8 +279,9 @@ public class Main {
 
             actionStack.push("ASSIGN:" + patient.patientId + ":" + availableDoctor.id);
             erGraph.BFS(Reception.id, targetRoom);
+            return true;
         } else {
-            System.out.println("\n[Warning]: No available doctor found!");
+            return false;
         }
     }
 
@@ -289,25 +330,14 @@ public class Main {
         System.out.println("   └─ Available Doctors        : " + availableDoctors);
     }
 
-    private static void undoLastAction(Stack actionStack, HashMap doctorMap) {
-        if (actionStack.isEmpty()) {
-            return;
-        }
-
-        String lastAction = (String) actionStack.pop();
-        String[] parts = lastAction.split(":");
-
-        System.out.println("\n=== UNDO ===");
-
-        if (parts[0].equals("ASSIGN")) {
-            int doctorId = Integer.parseInt(parts[2]);
-            Doctor doctor = (Doctor) doctorMap.get(doctorId);
-            if (doctor != null) {
-                doctor.status = "AVAILABLE";
-            }
-        }
-    }
-
+    /**
+     * Searches for a patient in the binary search tree (BST) using a provided patient ID
+     * and prints the patient's details if found. If the patient is not found, an
+     * appropriate message is displayed.
+     *
+     * @param patientTree The binary search tree containing patient records.
+     * @param scanner The scanner used to retrieve user input for the patient ID to search.
+     */
     private static void searchAndPrintPatient(BinarySearchTree patientTree, Scanner scanner) {
         System.out.print("\nType the patient ID to search:");
         String searchId = scanner.nextLine();

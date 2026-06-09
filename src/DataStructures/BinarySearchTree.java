@@ -53,7 +53,7 @@ public class BinarySearchTree {
      * @param patientId The patient ID to search for.
      * @return The found node or null if not found.
      */
-    private BSTNode findNode(BSTNode current, String patientId) {
+    private BSTNode searchRecursive(BSTNode current, String patientId) {
         if (current == null) {
             return null;
         }
@@ -61,9 +61,9 @@ public class BinarySearchTree {
             return current;
         }
         if (patientId.compareTo(current.patient.patientId) < 0) {
-            return findNode(current.left, patientId);
+            return searchRecursive(current.left, patientId);
         } else {
-            return findNode(current.right, patientId);
+            return searchRecursive(current.right, patientId);
         }
     }
 
@@ -74,7 +74,7 @@ public class BinarySearchTree {
     public void delete(Patient patient) {
         if (patient == null || root == null) return;
 
-        BSTNode targetBSTNode = findNode(root, patient.patientId);
+        BSTNode targetBSTNode = searchRecursive(root, patient.patientId);
 
         if (targetBSTNode == null) {
             System.out.println("Patient not found in the tree.");
@@ -155,7 +155,7 @@ public class BinarySearchTree {
      * @return The patient if found, otherwise null.
      */
     public Patient search(String patientId) {
-        BSTNode node = findNode(root, patientId);
+        BSTNode node = searchRecursive(root, patientId);
         return node != null ? node.patient : null;
     }
 

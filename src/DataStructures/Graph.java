@@ -131,8 +131,8 @@ public class Graph {
                 step = (String) parentMap.get(step);
             }
 
-            System.out.println("\n=== BFS SHORTEST PATH===");
-            System.out.print("Routh: ");
+            System.out.println("\nBFS SHORTEST PATH");
+            System.out.print("Route: ");
             LLNode node = path.getHead();
             while (node != null) {
                 System.out.print("[" + node.data + "]");

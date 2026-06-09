@@ -12,7 +12,7 @@ import HelperClasses.*;
  * hashmaps, and graphs.
  */
 public class Main {
-    static Room Reception = new Room("RO", "Reception");
+    static Room Reception = new Room("R0", "Reception");
     static Room TreatmentRoomA = new Room("R1", "Treatment Room A");
     static Room TreatmentRoomB = new Room("R2", "Treatment Room B");
     static Room ICU = new Room("R3", "ICU");
@@ -229,10 +229,10 @@ public class Main {
 
                 if (tokens.length >= 5) {
                     String patientId  = tokens[0].trim();
-                    String name       = tokens[1].trim();
-                    int age           = Integer.parseInt(tokens[2].trim());
-                    int severity      = Integer.parseInt(tokens[3].trim());
-                    int arrivalTime   = Integer.parseInt(tokens[4].trim());
+                    String name = tokens[1].trim();
+                    int age = Integer.parseInt(tokens[2].trim());
+                    int severity = Integer.parseInt(tokens[3].trim());
+                    int arrivalTime = Integer.parseInt(tokens[4].trim());
 
                     Patient newPatient = new Patient(patientId, name, age, severity, arrivalTime, currentTime);
                     actionStack.push("INTAKE:" + patientId);
@@ -290,14 +290,18 @@ public class Main {
             }
 
             actionStack.push("ASSIGN:" + patient.patientId + ":" + availableDoctor.id);
-            erGraph.BFS(Reception.id, targetRoom);
             return true;
         } else {
             return false;
         }
     }
 
-
+    /**
+     * Discharges a patient from the ER by removing them from the binary search tree
+     * @param dischargeQueue
+     * @param patientTree
+     * @param erGraph
+     */
     private static void dischargePatient(Queue dischargeQueue, BinarySearchTree patientTree, Graph erGraph) {
         if (!dischargeQueue.isEmpty()) {
             System.out.println("\n=== Patient Discharge ===");
@@ -310,12 +314,20 @@ public class Main {
                 System.out.println("\nDischarge path: " + treatmentRoom + " → R5");
                 erGraph.BFS(treatmentRoom, "R5");
             }
-            patientTree.delete(dischargedPatient);
+
             System.out.println(dischargedPatient.name + " successfully discharged.");
         } else {
             System.out.println("\n[Warning]: No patient to discharge!");
         }
     }
+
+    /**
+     * Prints a summary of the system's current status, including the number of patients,
+     * @param patientTree
+     * @param doctorMap
+     * @param totalAdmitted
+     * @param totalDischarged
+     */
     private static void printSystemSummary(BinarySearchTree patientTree, HashMap doctorMap, int totalAdmitted, int totalDischarged) {
         System.out.println("=== ER END OF THE DAY ===");
 
@@ -333,8 +345,8 @@ public class Main {
             System.out.println("No patients");
         }
 
-        int busyDoctors      = countBusyDoctors(doctorMap);
-        int totalDoctors     = 4;
+        int busyDoctors = countBusyDoctors(doctorMap);
+        int totalDoctors = 4;
         int availableDoctors = totalDoctors - busyDoctors;
 
         System.out.println("\n Doctor Status:");
@@ -357,7 +369,7 @@ public class Main {
         Patient foundPatient = patientTree.search(searchId);
 
         if (foundPatient != null) {
-            System.out.println("\nPatient found: " + foundPatient.name + " (ID: " + foundPatient.patientId);
+            System.out.println("\nPatient found: " + foundPatient.name + " (ID: " + foundPatient.patientId + " Name: " + foundPatient.name + " Age: " + foundPatient.age + " Severity: " + foundPatient.severity + ")");
         } else {
             System.out.println("\nPatient could not be found.");
         }

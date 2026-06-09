@@ -4,7 +4,13 @@ import java.io.*;
 import java.util.Scanner;
 import HelperClasses.*;
 
-
+/**
+ * The Main class represents a hospital management system with core functionalities
+ * for managing doctors, patients, rooms, and the hospital's operational processes. It
+ * provides methods for initializing the system, assigning resources, and handling
+ * patient-related operations through various data structures such as a binary search tree,
+ * hashmaps, and graphs.
+ */
 public class Main {
     static Room Reception = new Room("RO", "Reception");
     static Room TreatmentRoomA = new Room("R1", "Treatment Room A");
@@ -18,6 +24,13 @@ public class Main {
     static Doctor d3 = new Doctor(303, "Dr. Clara Hassan","AVAILABLE");
     static Doctor d4 = new Doctor(404, "Dr. David Reyes","AVAILABLE");
 
+    /**
+     * The main method serves as the entry point to the application, initializing key data structures,
+     * loading patient data, assigning doctors and treatment rooms to patients, handling patient discharge,
+     * performing patient searches, and printing the final system summary.
+     *
+     * @param args Command-line arguments; not used in this implementation.
+     */
     public static void main(String[] args) {
         Graph erGraph = initializeGraph();
         HashMap doctorMap = initializeDoctors();
@@ -121,6 +134,13 @@ public class Main {
         return null;
     }
 
+    /**
+     * Counts the number of doctors with a status of "BUSY" in the given HashMap of doctors.
+     *
+     * @param doctorMap A HashMap containing doctors, where each entry represents
+     *                  a doctor object mapped to a specific key.
+     * @return The total number of doctors in the HashMap whose status is "BUSY".
+     */
     private static int countBusyDoctors(HashMap doctorMap) {
         HelperClasses.HashMapNode[] table = doctorMap.getTable();
         int busyCount = 0;
@@ -141,24 +161,16 @@ public class Main {
 
         return busyCount;
     }
-    private static void listBusyDoctors(HashMap doctorMap) {
-        HelperClasses.HashMapNode[] table = doctorMap.getTable();
 
-        for (int i = 0; i < table.length; i++) {
-            if (table[i] != null) {
-                HelperClasses.HashMapNode node = table[i];
-
-                while (node != null) {
-                    Doctor doctor = (Doctor) node.value;
-                    if (doctor.status.equals("BUSY")) {
-                        System.out.println("      └─ [" + doctor.id + "] " + doctor.name + " - Status: " + doctor.status);
-                    }
-                    node = node.next;
-                }
-            }
-        }
-    }
-
+    /**
+     * Initializes and constructs a graph structure representing the relationships and connections
+     * between different areas of a hospital emergency room (ER). The graph includes vertices
+     * representing specific locations such as Reception, Treatment Rooms, ICU, Waiting Room,
+     * and Discharge, as well as edges representing the pathways or connections between them.
+     *
+     * @return A Graph object representing the hospital's ER layout with predefined vertices
+     * and edges.
+     */
     private static Graph initializeGraph() {
         Graph erGraph = new Graph();
 
@@ -169,12 +181,12 @@ public class Main {
         erGraph.addVertex(WaitingRoom.id);
         erGraph.addVertex(Discharge.id);
 
-        erGraph.addEdge(Reception.id,     TreatmentRoomA.id, true);
-        erGraph.addEdge(Reception.id,     WaitingRoom.id,    true);
-        erGraph.addEdge(TreatmentRoomA.id, TreatmentRoomB.id, true);
-        erGraph.addEdge(TreatmentRoomA.id, ICU.id,           true);
-        erGraph.addEdge(WaitingRoom.id,   TreatmentRoomB.id, true);
-        erGraph.addEdge(TreatmentRoomB.id, Discharge.id,     true);
+        erGraph.addEdge(Reception.id, TreatmentRoomA.id, true);
+        erGraph.addEdge(Reception.id, WaitingRoom.id,true);
+        erGraph.addEdge(TreatmentRoomA.id, TreatmentRoomB.id,true);
+        erGraph.addEdge(TreatmentRoomA.id, ICU.id,true);
+        erGraph.addEdge(WaitingRoom.id, TreatmentRoomB.id,true);
+        erGraph.addEdge(TreatmentRoomB.id, Discharge.id, true);
 
         return erGraph;
     }
@@ -285,6 +297,7 @@ public class Main {
         }
     }
 
+
     private static void dischargePatient(Queue dischargeQueue, BinarySearchTree patientTree, Graph erGraph) {
         if (!dischargeQueue.isEmpty()) {
             System.out.println("\n=== Patient Discharge ===");
@@ -298,7 +311,7 @@ public class Main {
                 erGraph.BFS(treatmentRoom, "R5");
             }
             patientTree.delete(dischargedPatient);
-            System.out.println("[✓] " + dischargedPatient.name + " successfully discharged.");
+            System.out.println(dischargedPatient.name + " successfully discharged.");
         } else {
             System.out.println("\n[Warning]: No patient to discharge!");
         }
@@ -308,26 +321,26 @@ public class Main {
 
         int stillInSystem = totalAdmitted - totalDischarged;
         System.out.println("\n📊 Number of Patients:");
-        System.out.println("   ├─ Total admitted patient              : " + totalAdmitted);
-        System.out.println("   ├─ Patients discharged                 : " + totalDischarged );
-        System.out.println("   └─ Patients still in the hospital      : " + stillInSystem);
+        System.out.println("Total admitted patient: " + totalAdmitted);
+        System.out.println("Patients discharged: " + totalDischarged );
+        System.out.println("Patients still in the hospital: " + stillInSystem);
 
         System.out.println("\n👥 Patients still in the hospital (BST InOrder):");
         if (stillInSystem > 0) {
-            System.out.println("   ├─ Patients");
+            System.out.println("Patients");
             patientTree.inOrder();
         } else {
-            System.out.println("   └─ No patients");
+            System.out.println("No patients");
         }
 
         int busyDoctors      = countBusyDoctors(doctorMap);
         int totalDoctors     = 4;
         int availableDoctors = totalDoctors - busyDoctors;
 
-        System.out.println("\n DOKTOR DURUMU:");
-        System.out.println("   ├─ Total Doctors            : " + totalDoctors);
-        System.out.println("   ├─ BUsy Doctors             : " + busyDoctors);
-        System.out.println("   └─ Available Doctors        : " + availableDoctors);
+        System.out.println("\n Doctor Status:");
+        System.out.println("Total Doctors: " + totalDoctors);
+        System.out.println("Busy Doctors: " + busyDoctors);
+        System.out.println("Available Doctors: " + availableDoctors);
     }
 
     /**

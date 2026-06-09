@@ -7,9 +7,9 @@ public class Patient {
     public int age;
     public int severity;
     public int arrivalTime;
-    public int assignedRoom;
-    public int assignedDocId;
-    public int priorityScore;
+    public int assignedRoom = -1;
+    public int assignedDocId = -1;
+    public int priorityScore = -1;
 
     public Patient(String id, String name, int age, int severity, int arrivalTime, int currentTime) {
         this.patientId = id;
